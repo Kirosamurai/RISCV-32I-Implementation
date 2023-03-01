@@ -10,6 +10,7 @@ Structures for each unit in the processor:
 6. Control Unit: Implemented using switch-case functionality of C++
 
 Each Instruction goes through the following phases:
+
 1.Fetch
 
 2.Decode
