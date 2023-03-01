@@ -16,13 +16,3 @@ Purpose of this file:
 #include<bits/stdc++.h>
 #include<stdio.h>
 #include<stdlib.h>
-
-using namespace std;
-
-int main(int argc, char** argv){
-    if(argc < 2){
-        cout << "Incorrect Number of Arguments. Please invoke the Simulator \n\t./myRISCVSim <input mem file> \n";
-        exit(1);
-    }
-
-}
