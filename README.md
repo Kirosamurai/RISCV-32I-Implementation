@@ -14,8 +14,11 @@ Each Instruction goes through the following phases:
 1.Fetch
 
 2.Decode
+
 3.Execute
+
 4.Memory Access
+
 5.Register Write
 
 Separate functions are created for these phases/tasks.
