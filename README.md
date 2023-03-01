@@ -29,5 +29,3 @@ To add:
 
 Developer's Name: Rhitvik Anand, 2021CSB1127
 Developer's Mail: rhitvik2000anand@gmail.com / 2021csb1127@iitrpr.ac.in
-
-(apne likh dena yaha pe)
