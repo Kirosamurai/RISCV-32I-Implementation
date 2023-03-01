@@ -12,6 +12,7 @@ Structures for each unit in the processor:
 Each Instruction goes through the following phases:
 
 1.Fetch
+
 2.Decode
 3.Execute
 4.Memory Access
