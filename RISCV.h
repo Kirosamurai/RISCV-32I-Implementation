@@ -114,10 +114,6 @@ int immU = 0;
 int immJ = 0;
 
 void decode(){
-    for(int i=0; i<32; i++){
-        instruction[i] = 1;
-    }
-
     //Decoding opcode
     for(int i=0; i<7; i++){
         op_code *= 2;
