@@ -31,3 +31,71 @@ public:
     RISCV(char* file_name, uint32_t mem_start);
     void run();
 };
+
+uint32_t stringtohex(char input[11])
+{
+    uint32_t answer=0x0;
+    int base=1;
+    for (int i=2; ; i++)
+    {
+        if (input[i]>='0' && input[i]<='9') 
+        {
+            answer = answer*16 + (input[i] - 48);
+            base = base * 16;
+        }
+        else if (input[i]>='a' && input[i]<='f') 
+        {
+            answer = answer*16 + (input[i] - 87);
+            base = base * 16;
+        }
+        else break;
+    }
+    return answer;
+}
+
+int instruction[32];
+FILE* programcode;
+
+void fetch()
+{   
+    // what to do if pc location is invalid? send to end of program [program terminated.]
+    char currentpc[11];
+    uint32_t currentpc_number;
+    char currentinstruction[11];
+    fscanf(programcode,"%s %s",currentpc, currentinstruction);
+    currentpc_number=stringtohex(currentpc);
+    if (currentpc_number==pc)
+    {
+        //instruction = currentinstruction
+    }
+    else if (currentpc_number>pc)
+    {
+        if (fseek(programcode, 0, SEEK_SET)!= 0) 
+        {
+            std::cout<<"Repositioning error";
+        }
+        while (currentpc_number!=pc)
+        {
+            fscanf(programcode,"%s %s",currentpc, currentinstruction);
+            currentpc_number=stringtohex(currentpc);
+        }
+    }
+    else 
+    {   
+        while ((currentpc_number!=pc)&&(strcmp(currentinstruction,"0xffffffff")))
+        {   
+            fscanf(programcode,"%s %s",currentpc, currentinstruction);
+            currentpc_number+=4;
+        }
+    }
+    //upload currentinstruction to instruction[32]
+    uint32_t bits=stringtohex(currentinstruction);
+    for (int i=0; i<32; i++)
+    {
+        if (((1<<i)&bits)!=0)
+        {
+            instruction[i]=1;
+        }
+        else instruction[i]=0;
+    }
+}
