@@ -5,7 +5,7 @@ Structures for each unit in the processor:
 1. Register File: Array of unsigned 32bit int values of size 32
 2. PC: Starts at 0x0 at start of program
 3. Memory: Array of unsigned 32bit int values of size 1024(for now)
-4. Instruction Memory: .mc file consiting of instructions in hex form 
+4. Instruction Memory: .mc file consisting of instructions in hex form 
 5. Decoder: Extracts information from instruction
 6. Control Unit: Implemented using switch-case functionality of C++
 
@@ -34,3 +34,6 @@ To add:
 
 Developer's Name: Rhitvik Anand, 2021CSB1127
 Developer's Mail: rhitvik2000anand@gmail.com / 2021csb1127@iitrpr.ac.in
+
+Developer's Name: Niti Shyamsukha
+Developer's E-Mail: niti200005@gmail.com
