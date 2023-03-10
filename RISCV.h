@@ -236,28 +236,28 @@ void execute(){
         PC += 4;
 
         if(f3 == 0){
-            if(f7 == 0){
+            if(f7 == 0){ //ADD
                 ALUres = op1 + op2;
             }
-            if(f7 == 32){
+            if(f7 == 32){ //SUB
                 ALUres = op1 - op2;
             }
-        }else if(f3 == 4){
+        }else if(f3 == 4){ //XOR
             ALUres = op1 ^ op2;
-        }else if(f3 == 6){
+        }else if(f3 == 6){ //OR
             ALUres = op1 | op2;
-        }else if(f3 == 7){
+        }else if(f3 == 7){ //AND
             ALUres = op1 & op2;
-        }else if(f3 == 1){
+        }else if(f3 == 1){ //SLL
             ALUres = op1 << op2;
-        }else if(f3 == 5){
-            if(f7 == 0){
+        }else if(f3 == 5){ 
+            if(f7 == 0){ //SRL
                 ALUres = op1 >> op2;
             }
-            if(f7 == 32){
+            if(f7 == 32){ //SRA
                 //ON HOLD
             }
-        }else if(f3 == 2){
+        }else if(f3 == 2){ //SLT
             ALUres = (op1 < op2)?1:0;
         }
     }else if(op_code == 19){
@@ -265,11 +265,11 @@ void execute(){
         op2 = immI;
         PC += 4;
 
-        if(f3 == 0){
+        if(f3 == 0){ //ADDI
             ALUres = op1 + op2;
-        }else if(f3 == 7){
+        }else if(f3 == 7){ //ANDI
             ALUres = op1 & op2;
-        }else if(f3 == 6){
+        }else if(f3 == 6){ //ORI
             ALUres = op1 | op2;
         }
     }else if(op_code == 3){
@@ -281,13 +281,13 @@ void execute(){
         ALUres = 0;
 
         switch (f3){
-        case 0:
+        case 0: //LB
             LoadType = 1;
             break;
-        case 1:
+        case 1: //LH
             LoadType = 2;
             break;
-        case 2:
+        case 2: //LW
             LoadType = 3;
             break;
         }
@@ -300,13 +300,13 @@ void execute(){
         ALUres = 0;
 
         switch (f3){
-        case 0:
+        case 0: //SB
             StoreType = 1;
             break;
-        case 1:
+        case 1: //SH
             StoreType = 2;
             break;
-        case 2:
+        case 2: //SW
             StoreType = 3;
             break;
         }
@@ -317,7 +317,7 @@ void execute(){
         ALUres = op1 - op2;
 
         switch (f3){
-        case 0:
+        case 0: //BEQ
             if(ALUres == 0){
                 TakeBranch = 1;
                 PC += immS;
@@ -326,7 +326,7 @@ void execute(){
                 PC += 4;
             }
             break;
-        case 1:
+        case 1: //BNE
             if(ALUres != 0){
                 TakeBranch = 1;
                 PC += immS;
@@ -335,7 +335,7 @@ void execute(){
                 PC += 4;
             }
             break;
-        case 4:
+        case 4: //BLT
             if(ALUres < 0){
                 TakeBranch = 1;
                 PC += immS;
@@ -344,7 +344,7 @@ void execute(){
                 PC += 4;
             }
             break;
-        case 5:
+        case 5: //BGE
             if(ALUres >= 0){
                 TakeBranch = 1;
                 PC += immS;
@@ -354,15 +354,15 @@ void execute(){
             }
             break;
         }
-    }else if(op_code == 55){
+    }else if(op_code == 55){ //LUI
         ALUres = immU << 12;
         PC += 4;
-    }else if(op_code == 23){
+    }else if(op_code == 23){ //AUIPC
         ALUres = PC + (immU << 12);
-    }else if(op_code == 111){
+    }else if(op_code == 111){ //JAL
         ALUres = PC + 4;
         PC += immJ;
-    }else if(op_code = 103){
+    }else if(op_code = 103){ //JALR
         op1 = reg[rs1];
         ALUres = PC + 4;
         PC = op1 + immI;
