@@ -113,6 +113,7 @@ int immB = 0;
 int immU = 0;
 int immJ = 0;
 
+//Decode
 void decode(){
     //Decoding opcode
     for(int i=0; i<7; i++){
@@ -210,4 +211,160 @@ void decode(){
     immJ += instruction[31];
 
     immJ *= 2; //0th bit is always 0
+}
+
+//Control Lines
+int ALUres = 0;
+int MemAdr;
+int LoadType;
+int StoreType;
+int TakeBranch;
+
+//Everything Else
+int op1;
+int op2;
+int PC;
+
+//Execute
+//PC Values are changed in execute only
+//All the if-else and switch statements make the ALU Control Unit
+//All Control Lines Updated in Execute
+void execute(){
+    if(op_code == 51){
+        op1 = reg[rs1];
+        op2 = reg[rs2];
+        PC += 4;
+
+        if(f3 == 0){
+            if(f7 == 0){
+                ALUres = op1 + op2;
+            }
+            if(f7 == 32){
+                ALUres = op1 - op2;
+            }
+        }else if(f3 == 4){
+            ALUres = op1 ^ op2;
+        }else if(f3 == 6){
+            ALUres = op1 | op2;
+        }else if(f3 == 7){
+            ALUres = op1 & op2;
+        }else if(f3 == 1){
+            ALUres = op1 << op2;
+        }else if(f3 == 5){
+            if(f7 == 0){
+                ALUres = op1 >> op2;
+            }
+            if(f7 == 32){
+                //ON HOLD
+            }
+        }else if(f3 == 2){
+            ALUres = (op1 < op2)?1:0;
+        }
+    }else if(op_code == 19){
+        op1 = reg[rs1];
+        op2 = immI;
+        PC += 4;
+
+        if(f3 == 0){
+            ALUres = op1 + op2;
+        }else if(f3 == 7){
+            ALUres = op1 & op2;
+        }else if(f3 == 6){
+            ALUres = op1 | op2;
+        }
+    }else if(op_code == 3){
+        op1 = reg[rs1];
+        op2 = immI;
+        PC += 4;
+        
+        MemAdr = op1 + op2;
+        ALUres = 0;
+
+        switch (f3){
+        case 0:
+            LoadType = 1;
+            break;
+        case 1:
+            LoadType = 2;
+            break;
+        case 2:
+            LoadType = 3;
+            break;
+        }
+    }else if(op_code == 35){
+        op1 = reg[rs1];
+        op2 = immS;
+        PC += 4;
+
+        MemAdr = op1 + op2;
+        ALUres = 0;
+
+        switch (f3){
+        case 0:
+            StoreType = 1;
+            break;
+        case 1:
+            StoreType = 2;
+            break;
+        case 2:
+            StoreType = 3;
+            break;
+        }
+    }else if(op_code == 99){
+        op1 = reg[rs1];
+        op2 = reg[rs2];
+
+        ALUres = op1 - op2;
+
+        switch (f3){
+        case 0:
+            if(ALUres == 0){
+                TakeBranch = 1;
+                PC += immS;
+            }else{
+                TakeBranch = 0;
+                PC += 4;
+            }
+            break;
+        case 1:
+            if(ALUres != 0){
+                TakeBranch = 1;
+                PC += immS;
+            }else{
+                TakeBranch = 0;
+                PC += 4;
+            }
+            break;
+        case 4:
+            if(ALUres < 0){
+                TakeBranch = 1;
+                PC += immS;
+            }else{
+                TakeBranch = 0;
+                PC += 4;
+            }
+            break;
+        case 5:
+            if(ALUres >= 0){
+                TakeBranch = 1;
+                PC += immS;
+            }else{
+                TakeBranch = 0;
+                PC += 4;
+            }
+            break;
+        }
+    }else if(op_code == 55){
+        ALUres = immU << 12;
+        PC += 4;
+    }else if(op_code == 23){
+        ALUres = PC + (immU << 12);
+    }else if(op_code == 111){
+        ALUres = PC + 4;
+        PC += immJ;
+    }else if(op_code = 103){
+        op1 = reg[rs1];
+        ALUres = PC + 4;
+        PC = op1 + immI;
+    }
 }
