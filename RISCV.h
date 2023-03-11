@@ -362,7 +362,7 @@ void execute(){
     }else if(op_code == 111){
         ALUres = PC + 4;
         pc += immJ;
-    }else if(op_code = 103){
+    }else if(op_code == 103){
         op1 = reg[rs1];
         ALUres = PC + 4;
         pc = op1 + immI;
