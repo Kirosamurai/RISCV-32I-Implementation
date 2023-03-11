@@ -127,100 +127,83 @@ void fetch()
 
 //Decode
 void decode(){
+
     //Decoding opcode
     for(int i=0; i<7; i++){
-        op_code *= 2;
-        op_code += instruction[i];
+        op_code += instruction[i]*(1<<i);
     }
 
     //Decoding rd
     for(int i=7; i<12; i++){
-        rd *= 2;
-        rd += instruction[i];
+        rd += instruction[i]*(1<<(i-7));
     }
 
     //Decoding f3
     for(int i=12; i<15; i++){
-        f3 *= 2;
-        f3 += instruction[i];
+        f3 += instruction[i]*(1<<(i-12));
     }
 
     //Decoding rs1
     for(int i=15; i<20; i++){
-        rs1 *= 2;
-        rs1 += instruction[i];
+        rs1 += instruction[i]*(1<<(i-15));
     }
 
     //Decoding rs2
     for(int i=20; i<25; i++){
-        rs2 *= 2;
-        rs2 += instruction[i];
+        rs2 += instruction[i]*(1<<(i-20));
     }
 
     //Decoding f7
     for(int i=25; i<32; i++){
-        f7 *= 2;
-        f7 += instruction[i];
+        f7 += instruction[i]*(1<<(i-25));
     }
 
     //Decoding ImmI
     for(int i=20; i<32; i++){
-        immI *= 2;
-        immI += instruction[i];
+        immI += instruction[i]*(1<<(i-20));
     }
 
     //Decoding ImmS
     for(int i=7; i<12; i++){
-        immS *= 2;
-        immS += instruction[i];
+        immS += instruction[i]*(1<<(i-7));
     }
 
     for(int i=25; i<32; i++){
-        immS *= 2;
-        immS += instruction[i];
+        immS += instruction[i]*(1<<(i-20));
     }
 
     //Decoding ImmB
     for(int i=8; i<12; i++){
-        immB *= 2;
-        immB += instruction[i];
+        immB += instruction[i]*(1<<(i-8));
     }
 
     for(int i=25; i<31; i++){
-        immB *= 2;
-        immB += instruction[i];
+        immB += instruction[i]*(1<<(i-21));
     }
 
-    immB *= 2;
-    immB += instruction[7];
-
-    immB *= 2;
-    immB += instruction[31];
+    immB += instruction[7]*(1<<10);
+    
+    immB += instruction[31]*(1<<11);
 
     immB *= 2; //0th bit is always 0
 
     //Decoding ImmU
     for(int i=12; i<32; i++){
-        immU *= 2;
-        immU += instruction[i];
+        immU += instruction[i]*(1<<(i-12));
     }
 
     //Decoding ImmJ
     for(int i=20; i<31; i++){
-        immJ *= 2;
-        immJ += instruction[i];
+        immJ += instruction[i]*(1<<(i-20));
     }
     
-    immJ *= 2;
-    immJ += instruction[11];
+    immJ += instruction[19]*(1<<11);
 
     for(int i=12; i<20; i++){
-        immJ *= 2;
-        immJ += instruction[i];
+        immJ += instruction[i]*(1<<i);
     }
 
-    immJ *= 2;
-    immJ += instruction[31];
+    immJ += instruction[31]*(1<<20);
 
     immJ *= 2; //0th bit is always 0
 }
