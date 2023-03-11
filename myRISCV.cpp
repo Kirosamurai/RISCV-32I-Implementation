@@ -3,8 +3,6 @@
 PURPOSE OF FILE:
 implementation file for simulator
 
-[this is where you have to define all the fetch decode etc wale functions]
-
 */
 
 #include<RISCV.h>
