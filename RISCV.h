@@ -5,7 +5,7 @@
 
 void run();
 void reset_proc();
-void load_memory(char* file_name);
+void load_memory(char* file_name, int N);
 void write_data_mem();
 void exit();
 
