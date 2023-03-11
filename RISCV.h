@@ -490,3 +490,14 @@ void write_back()
         }
     }
 }
+
+void reset(){
+    int ALUres = 0;
+    int MemAdr = 0;
+    int LoadType = 0;
+    int StoreType = 0;
+    int TakeBranch = 0;
+    int MemRead = 0;
+    int MemWrite = 0;
+    int RegWrite = 0;
+}
