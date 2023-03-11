@@ -366,3 +366,111 @@ void execute(){
         PC = op1 + immI;
     }
 }
+
+//int MemAdr = 0;
+//MemAdr int or long?
+// uint32_t MemAdr = 0;
+std::map<uint32_t, uint8_t> memory;
+
+//map<MemAdr, ByteMemory>
+/*Since byte is the smallest unit of memory being loaded or stored, 
+the map used in this program will have 1-byte addressing.*/
+
+void mem()
+{
+    if (MemRead==1)
+    {   
+        RegWrite = 1;
+        LoadData = 0;
+        switch (LoadType)
+        {   
+            //rd = M[rs1+imm][0:7] LB
+            case 1: 
+                {   
+                    if (memory.count(MemAdr)==0)
+                    {
+                        LoadData=0;
+                        memory[MemAdr]=0;
+                    }
+                    else
+                    {
+                        LoadData = memory[MemAdr];
+                        if ((LoadData&(1<<7))!=0)
+                        {
+                            LoadData+=0xFFFFFF00;
+                        }
+                    }
+                    break;
+                }
+            //rd = M[rs1+imm][0:15] LH
+            case 2:
+                {
+                    if (memory.count(MemAdr)==0)
+                    {
+                        LoadData+=0;
+                        memory[MemAdr]=0;
+                    }
+                    else
+                    {   
+                        LoadData = memory[MemAdr];
+                    }
+                    if (memory.count(MemAdr+1)==0)
+                    {
+                        memory[MemAdr+1]=0;
+                    }
+                    else
+                    {
+                        LoadData = LoadData + (memory[MemAdr+1]<<8);
+                        if ((LoadData&(1<<15))!=0)
+                        {
+                            LoadData+=0xFFFF0000;
+                        }
+                    }
+                    break;
+                }
+            //rd = M[rs1+imm][0:31] LW
+            case 3: 
+               {    
+                    for (int i=0; i<4; i++)
+                    {   
+                        if (memory.count(MemAdr+i)==0)
+                        {
+                            memory[MemAdr+i]=0;
+                        }
+                        else
+                        {   
+                            LoadData += (memory[MemAdr+i]<<(8*i));
+                        }
+                    }
+                    break; 
+                }
+            default: break;   
+        }
+    }
+    else if (MemWrite==1)
+    {
+        switch (StoreType)
+        {
+            case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
+            {
+                memory[MemAdr]=reg[rs2];
+                break;
+            }
+            case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
+            {
+                memory[MemAdr]=reg[rs2];
+                memory[MemAdr+1]=(reg[rs2]>>8);
+                break;
+            }
+            case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
+            {
+                memory[MemAdr]=reg[rs2];
+                memory[MemAdr+1]=(reg[rs2]>>8);
+                memory[MemAdr+2]=(reg[rs2]>>16);
+                memory[MemAdr+3]=(reg[rs2]>>24);
+                break;
+            }
+            default: break;   
+        }
+    }
+}
