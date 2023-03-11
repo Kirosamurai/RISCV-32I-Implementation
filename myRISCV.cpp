@@ -16,18 +16,13 @@ implementation file for simulator
 void reset_proc() {
   
   //setting empty memory:
-  //please explain to me how the memory map thingy works
-  for (int i = 0; i < MEM_SIZE; i++) {
-    MEM[i] = 0x0;
-  }
-  
+  memory.clear();
   //setting empty registers:
-  //do we wanna put default values in registers? like global pointer stack pointer etc? (i think we should)
   for (int i= 0; i < ADD_LEN; i++) {
     reg[i] = 0x0;
   }
-  
-  reg[2] = 0x7FFFFFF0
+  reg[2] = 0x7FFFFFF0;
+  reg[3] = 0x10000000;
 }
 
 //load_program_memory(char *file_name, int n) pupulates the instruction memory from file_name and stores value of N (required for all test files) to x3 in register file
