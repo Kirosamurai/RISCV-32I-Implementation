@@ -491,7 +491,7 @@ void write_back()
     }
 }
 
-void reset(){
+void reset_proc(){
     int ALUres = 0;
     int MemAdr = 0;
     int LoadType = 0;
