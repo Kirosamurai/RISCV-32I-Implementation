@@ -474,3 +474,18 @@ void mem()
         }
     }
 }
+
+void write_back()
+{   
+    if (RegWrite == 1)
+    {
+        if(op_code == 3)
+        {
+            reg[rd] = LoadData;
+        }
+        else
+        {
+            reg[rd] = ALUres;
+        }
+    }
+}
