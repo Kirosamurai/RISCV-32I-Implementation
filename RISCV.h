@@ -215,10 +215,13 @@ void decode(){
 
 //Control Lines
 int ALUres = 0;
-int MemAdr;
-int LoadType;
-int StoreType;
-int TakeBranch;
+int MemAdr = 0;
+int LoadType = 0;
+int StoreType = 0;
+int TakeBranch = 0;
+int MemRead = 0;
+int MemWrite = 0;
+int RegWrite = 0;
 
 //Everything Else
 int op1;
@@ -233,80 +236,80 @@ void execute(){
     if(op_code == 51){
         op1 = reg[rs1];
         op2 = reg[rs2];
-        PC += 4;
+        RegWrite = 1;
 
         if(f3 == 0){
-            if(f7 == 0){ //ADD
+            if(f7 == 0){
                 ALUres = op1 + op2;
             }
-            if(f7 == 32){ //SUB
+            if(f7 == 32){
                 ALUres = op1 - op2;
             }
-        }else if(f3 == 4){ //XOR
+        }else if(f3 == 4){
             ALUres = op1 ^ op2;
-        }else if(f3 == 6){ //OR
+        }else if(f3 == 6){
             ALUres = op1 | op2;
-        }else if(f3 == 7){ //AND
+        }else if(f3 == 7){
             ALUres = op1 & op2;
-        }else if(f3 == 1){ //SLL
+        }else if(f3 == 1){
             ALUres = op1 << op2;
-        }else if(f3 == 5){ 
-            if(f7 == 0){ //SRL
+        }else if(f3 == 5){
+            if(f7 == 0){
                 ALUres = op1 >> op2;
             }
-            if(f7 == 32){ //SRA
+            if(f7 == 32){
                 //ON HOLD
             }
-        }else if(f3 == 2){ //SLT
+        }else if(f3 == 2){
             ALUres = (op1 < op2)?1:0;
         }
     }else if(op_code == 19){
         op1 = reg[rs1];
         op2 = immI;
-        PC += 4;
+        RegWrite = 1;
 
-        if(f3 == 0){ //ADDI
+        if(f3 == 0){
             ALUres = op1 + op2;
-        }else if(f3 == 7){ //ANDI
+        }else if(f3 == 7){
             ALUres = op1 & op2;
-        }else if(f3 == 6){ //ORI
+        }else if(f3 == 6){
             ALUres = op1 | op2;
         }
     }else if(op_code == 3){
         op1 = reg[rs1];
         op2 = immI;
-        PC += 4;
         
         MemAdr = op1 + op2;
         ALUres = 0;
+        MemRead = 1;
 
         switch (f3){
-        case 0: //LB
+        case 0:
             LoadType = 1;
             break;
-        case 1: //LH
+        case 1:
             LoadType = 2;
             break;
-        case 2: //LW
+        case 2:
             LoadType = 3;
             break;
         }
     }else if(op_code == 35){
         op1 = reg[rs1];
         op2 = immS;
-        PC += 4;
 
         MemAdr = op1 + op2;
         ALUres = 0;
+        MemWrite = 1;
 
         switch (f3){
-        case 0: //SB
+        case 0:
             StoreType = 1;
             break;
-        case 1: //SH
+        case 1:
             StoreType = 2;
             break;
-        case 2: //SW
+        case 2:
             StoreType = 3;
             break;
         }
@@ -317,52 +320,47 @@ void execute(){
         ALUres = op1 - op2;
 
         switch (f3){
-        case 0: //BEQ
+        case 0:
             if(ALUres == 0){
                 TakeBranch = 1;
                 PC += immS;
             }else{
                 TakeBranch = 0;
-                PC += 4;
             }
             break;
-        case 1: //BNE
+        case 1:
             if(ALUres != 0){
                 TakeBranch = 1;
                 PC += immS;
             }else{
                 TakeBranch = 0;
-                PC += 4;
             }
             break;
-        case 4: //BLT
+        case 4:
             if(ALUres < 0){
                 TakeBranch = 1;
                 PC += immS;
             }else{
                 TakeBranch = 0;
-                PC += 4;
             }
             break;
-        case 5: //BGE
+        case 5:
             if(ALUres >= 0){
                 TakeBranch = 1;
                 PC += immS;
             }else{
                 TakeBranch = 0;
-                PC += 4;
             }
             break;
         }
-    }else if(op_code == 55){ //LUI
+    }else if(op_code == 55){
         ALUres = immU << 12;
-        PC += 4;
-    }else if(op_code == 23){ //AUIPC
+    }else if(op_code == 23){
         ALUres = PC + (immU << 12);
-    }else if(op_code == 111){ //JAL
+    }else if(op_code == 111){
         ALUres = PC + 4;
         PC += immJ;
-    }else if(op_code = 103){ //JALR
+    }else if(op_code = 103){
         op1 = reg[rs1];
         ALUres = PC + 4;
         PC = op1 + immI;
