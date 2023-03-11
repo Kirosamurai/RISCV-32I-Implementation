@@ -1,4 +1,5 @@
 #include <string>
+#include <map>
 
 #define ADD_LEN 32
 #define MEM_SIZE 0x10000
