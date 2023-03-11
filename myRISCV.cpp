@@ -26,6 +26,8 @@ void reset_proc() {
   for (int i= 0; i < ADD_LEN; i++) {
     reg[i] = 0x0;
   }
+  
+  reg[2] = 0x7FFFFFF0
 }
 
 //load_program_memory(char *file_name, int n) pupulates the instruction memory from file_name and stores value of N (required for all test files) to x3 in register file
