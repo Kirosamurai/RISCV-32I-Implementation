@@ -15,23 +15,49 @@ void execute();
 void mem();
 void write_back();
 
+int instruction[32];
+FILE* programcode;
+
+//ALU Variables
+int op_code = 0;
+int rd = 0;
+int f3 = 0;
+int rs1 = 0;
+int rs2 = 0;
+int f7 = 0;
+int immI = 0;
+int immS = 0;
+int immB = 0;
+int immU = 0;
+int immJ = 0;
+
+//Control Lines
+int ALUres = 0;
+int MemAdr = 0;
+int LoadType = 0;
+int StoreType = 0;
+int TakeBranch = 0;
+int MemRead = 0;
+int MemWrite = 0;
+int RegWrite = 0;
+
+int op1;
+int op2;
 
 class RISCV{
-    uint8_t mem[ADD_LEN];
-    uint32_t mem_start = 0x0;
     
     uint32_t reg[32];
     uint32_t pc = 0x0;
-    uint32_t pc_incr = 0x0;
 
-    int read_word(uint32_t addr, char* mem);
-    void write_word(char *mem, uint32_t addr, uint32_t data);
+    int read_word(uint32_t addr, char* mem); //check later: do we need?
+    void write_word(char *mem, uint32_t addr, uint32_t data); //check later: do we need?
 
 public:
     RISCV(char* file_name, uint32_t mem_start);
     void run();
 };
 
+//Function to convert a string hexadecimal to respective integer decimal.
 uint32_t stringtohex(char input[11])
 {
     uint32_t answer=0x0;
@@ -53,8 +79,6 @@ uint32_t stringtohex(char input[11])
     return answer;
 }
 
-int instruction[32];
-FILE* programcode;
 
 void fetch()
 {   
@@ -72,7 +96,7 @@ void fetch()
     {
         if (fseek(programcode, 0, SEEK_SET)!= 0) 
         {
-            std::cout<<"Repositioning error";
+            std::cout<<"Repositioning error. Check File Handling!"; 
         }
         while (currentpc_number!=pc)
         {
@@ -99,19 +123,6 @@ void fetch()
         else instruction[i]=0;
     }
 }
-
-//Declaring all ints to be decoded
-int op_code = 0;
-int rd = 0;
-int f3 = 0;
-int rs1 = 0;
-int rs2 = 0;
-int f7 = 0;
-int immI = 0;
-int immS = 0;
-int immB = 0;
-int immU = 0;
-int immJ = 0;
 
 //Decode
 void decode(){
@@ -213,21 +224,6 @@ void decode(){
     immJ *= 2; //0th bit is always 0
 }
 
-//Control Lines
-int ALUres = 0;
-int MemAdr = 0;
-int LoadType = 0;
-int StoreType = 0;
-int TakeBranch = 0;
-int MemRead = 0;
-int MemWrite = 0;
-int RegWrite = 0;
-
-//Everything Else
-int op1;
-int op2;
-int PC;
-
 //Execute
 //PC Values are changed in execute only
 //All the if-else and switch statements make the ALU Control Unit
@@ -323,7 +319,7 @@ void execute(){
         case 0:
             if(ALUres == 0){
                 TakeBranch = 1;
-                PC += immS;
+                pc += immS;
             }else{
                 TakeBranch = 0;
             }
@@ -331,7 +327,7 @@ void execute(){
         case 1:
             if(ALUres != 0){
                 TakeBranch = 1;
-                PC += immS;
+                pc += immS;
             }else{
                 TakeBranch = 0;
             }
