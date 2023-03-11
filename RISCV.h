@@ -233,6 +233,7 @@ void execute(){
         op1 = reg[rs1];
         op2 = reg[rs2];
         RegWrite = 1;
+        pc += 4;
 
         if(f3 == 0){
             if(f7 == 0){
@@ -263,6 +264,7 @@ void execute(){
         op1 = reg[rs1];
         op2 = immI;
         RegWrite = 1;
+        pc += 4;
 
         if(f3 == 0){
             ALUres = op1 + op2;
@@ -278,6 +280,7 @@ void execute(){
         MemAdr = op1 + op2;
         ALUres = 0;
         MemRead = 1;
+        pc += 4;
 
         switch (f3){
         case 0:
@@ -297,6 +300,7 @@ void execute(){
         MemAdr = op1 + op2;
         ALUres = 0;
         MemWrite = 1;
+        pc += 4;
 
         switch (f3){
         case 0:
@@ -335,7 +339,7 @@ void execute(){
         case 4:
             if(ALUres < 0){
                 TakeBranch = 1;
-                PC += immS;
+                pc += immS;
             }else{
                 TakeBranch = 0;
             }
@@ -343,7 +347,7 @@ void execute(){
         case 5:
             if(ALUres >= 0){
                 TakeBranch = 1;
-                PC += immS;
+                pc += immS;
             }else{
                 TakeBranch = 0;
             }
@@ -351,15 +355,16 @@ void execute(){
         }
     }else if(op_code == 55){
         ALUres = immU << 12;
+        pc += 4;
     }else if(op_code == 23){
-        ALUres = PC + (immU << 12);
+        ALUres = pc + (immU << 12);
     }else if(op_code == 111){
         ALUres = PC + 4;
-        PC += immJ;
+        pc += immJ;
     }else if(op_code = 103){
         op1 = reg[rs1];
         ALUres = PC + 4;
-        PC = op1 + immI;
+        pc = op1 + immI;
     }
 }
 
