@@ -64,7 +64,8 @@ sub x20, x3, x18
 addi x20, x20, -1
 .l2start: 
 bge x19, x20, .loop2
-slli x25, x19, 2
+addi x9, x0, 2
+sll x25, x19, x9
 add x23, x6, x25
 lw x21, 0(x23)
 addi x25, x25, 4
