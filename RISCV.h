@@ -497,6 +497,8 @@ void RISCV::execute(){
         op1 = reg[rs1];
         ALUres = pc + 4;
         pc = op1 + immI;
+    }else{
+        instruction_exit();
     }
 }
 
