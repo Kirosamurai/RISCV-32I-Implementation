@@ -116,10 +116,10 @@ void RISCV::fetch()
         {
             std::cout<<"Repositioning error. Check File Handling!"; 
         }
-        while (currentpc_number!=pc)
-        {
+        while ((currentpc_number!=pc)&&(strcmp(currentinstruction,"0xffffffff")))
+        {   
             fscanf(programcode,"%s %s",currentpc, currentinstruction);
-            currentpc_number=stringtohex(currentpc);
+            currentpc_number = stringtohex(currentpc);
         }
     }
     else 
