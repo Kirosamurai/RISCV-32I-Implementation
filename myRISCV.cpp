@@ -10,34 +10,15 @@ implementation file for simulator
 #include<stdio.h>
 #include<stdlib.h>
 
-//reset_proc() is called to reset the processor to default values
-void reset_proc() {
-  
-  //setting empty memory:
-  memory.clear();
-  //setting empty registers:
-  for (int i= 0; i < ADD_LEN; i++) {
-    reg[i] = 0x0;
-  }
-  reg[2] = 0x7FFFFFF0;
-  reg[3] = 0x10000000;
-}
-
-//load_program_memory(char *file_name, int n) pupulates the instruction memory from file_name and stores value of N (required for all test files) to x3 in register file
+//load_program_memory(char *file_name, int n) populates the instruction memory from file_name and stores value of N (required for all test files) to x3 in register file
 void load_memory(char *file_name, int N) {
   
   //instruction memory:
-  FILE *fp;
-  unsigned int address, instruction;
-  fp = fopen(file_name, "r");
-  if(fp == NULL) {
+  programcode = fopen(file_name, "r");
+  if(programcode == NULL) {
     printf("Error opening input file!\n");
     exit(1);
   }
-  while(fscanf(fp, "%x %x", &address, &instruction) != EOF) {
-    write_word(MEM, address, instruction);
-  }
-  fclose(fp);
   
   //storing value of N:
   reg[3] = N;
