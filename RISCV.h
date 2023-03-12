@@ -114,6 +114,13 @@ void store_memory()
     }
 }
 
+void instruction_exit()
+{
+  //Terminate Program and feed all memory into the .mc file
+        store_memory();
+        fclose(programcode);
+        exit(0);
+}    
 void RISCV::fetch()
 {   
     // what does processor do if pc location is invalid?: sends to end of program [program terminated.]
@@ -405,10 +412,7 @@ void RISCV::execute(){
         ALUres = pc + 4;
         pc = op1 + immI;
     }else{
-        //Terminate Program and feed all memory into the .mc file
-        store_memory();
-        fclose(programcode);
-        exit(0);
+        instruction_exit();
     }
 }
 
