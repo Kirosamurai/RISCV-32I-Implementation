@@ -560,5 +560,6 @@ void RISCV::write_back()
     else
     {
         cout<<"WRITEBACK: no register writeback operation\n";
+    }
 }
 
