@@ -341,7 +341,7 @@ void RISCV::execute(){
         case 0:
             if(ALUres == 0){
                 TakeBranch = 1;
-                pc += immS;
+                pc += immB;
             }else{
                 TakeBranch = 0;
                 pc += 4;
@@ -350,7 +350,7 @@ void RISCV::execute(){
         case 1:
             if(ALUres != 0){
                 TakeBranch = 1;
-                pc += immS;
+                pc += immB;
             }else{
                 TakeBranch = 0;
                 pc += 4;
@@ -359,7 +359,7 @@ void RISCV::execute(){
         case 4:
             if(ALUres < 0){
                 TakeBranch = 1;
-                pc += immS;
+                pc += immB;
             }else{
                 TakeBranch = 0;
                 pc += 4;
@@ -368,7 +368,7 @@ void RISCV::execute(){
         case 5:
             if(ALUres >= 0){
                 TakeBranch = 1;
-                pc += immS;
+                pc += immB;
             }else{
                 TakeBranch = 0;
                 pc += 4;
