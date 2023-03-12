@@ -504,6 +504,7 @@ void RISCV::execute(){
         pc = op1 + immI;
         RegWrite = 1;
     }else{
+        std::cout<<"Storing Memory in the program file.\n";
         instruction_exit();
     }
 }
