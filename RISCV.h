@@ -340,6 +340,7 @@ void RISCV::execute(){
                 pc += immS;
             }else{
                 TakeBranch = 0;
+                pc += 4;
             }
             break;
         case 1:
@@ -348,6 +349,7 @@ void RISCV::execute(){
                 pc += immS;
             }else{
                 TakeBranch = 0;
+                pc += 4;
             }
             break;
         case 4:
@@ -356,6 +358,7 @@ void RISCV::execute(){
                 pc += immS;
             }else{
                 TakeBranch = 0;
+                pc += 4;
             }
             break;
         case 5:
@@ -364,6 +367,7 @@ void RISCV::execute(){
                 pc += immS;
             }else{
                 TakeBranch = 0;
+                pc += 4;
             }
             break;
         }
