@@ -10,7 +10,6 @@ implementation file for simulator
 #include<stdlib.h>
 
 #include<cstring>
-#include<map>
 
 RISCV processor;
 
