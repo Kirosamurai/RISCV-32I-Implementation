@@ -549,11 +549,16 @@ void RISCV::write_back()
         if(op_code == 3)
         {
             reg[rd] = LoadData;
+            cout<<"WRITEBACK: write "<<LoadData<<" to x"<<rd<<"\n";
         }
         else
         {
             reg[rd] = ALUres;
+            cout<<"WRITEBACK: write "<<ALUres<<" to x"<<rd<<"\n";
         }
     }
+    else
+    {
+        cout<<"WRITEBACK: no register writeback operation\n";
 }
 
