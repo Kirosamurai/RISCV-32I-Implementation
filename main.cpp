@@ -27,8 +27,6 @@ int main(int argc, char** argv) {
     exit(1);
   }
   
-  //reset the processor
-  reset_proc();
   //load the program memory
   load_memory(argv[1], n);
   //run the simulator
