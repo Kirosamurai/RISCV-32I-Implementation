@@ -5,6 +5,7 @@
 #define ADD_LEN 32
 #define MEM_SIZE 0x10000
 
+int clock = 0;
 int instruction[32];
 FILE* programcode;
 
