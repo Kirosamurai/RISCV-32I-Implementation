@@ -10,11 +10,6 @@ void load_memory(char* file_name, int N);
 void write_data_mem();
 void exit();
 
-void fetch();
-void decode();
-void execute();
-void mem();
-void write_back();
 
 int instruction[32];
 FILE* programcode;
@@ -44,7 +39,6 @@ int RegWrite = 0;
 int op1;
 int op2;
 
-
 uint32_t MemAdr = 0;
 std::map<uint32_t, uint8_t> memory;
 
@@ -54,15 +48,29 @@ the map used in this program will have 1-byte addressing.*/
 
 class RISCV{
     
-    uint32_t reg[32];
-    uint32_t pc = 0x0;
-
     int read_word(uint32_t addr, char* mem); //check later: do we need?
     void write_word(char *mem, uint32_t addr, uint32_t data); //check later: do we need?
 
 public:
+    //constructor function
+    RISCV()
+    {
+        pc = 0x0;
+        for (int i=0; i<32; i++)
+        {
+            reg[i]=0;
+        }
+    }
+    
+    uint32_t reg[32];
+    uint32_t pc;
     RISCV(char* file_name, uint32_t mem_start);
     void run();
+    void fetch();
+    void decode();
+    void execute();
+    void mem();
+    void write_back();
 };
 
 //Function to convert a string hexadecimal to respective integer decimal.
@@ -88,9 +96,9 @@ uint32_t stringtohex(char input[11])
 }
 
 
-void fetch()
+void RISCV::fetch()
 {   
-    // what to do if pc location is invalid? send to end of program [program terminated.]
+    // what does processor do if pc location is invalid?: sends to end of program [program terminated.]
     char currentpc[11];
     uint32_t currentpc_number;
     char currentinstruction[11];
@@ -133,7 +141,7 @@ void fetch()
 }
 
 //Decode
-void decode(){
+void RISCV::decode(){
 
     //Decoding opcode
     for(int i=0; i<7; i++){
@@ -219,7 +227,7 @@ void decode(){
 //PC Values are changed in execute only
 //All the if-else and switch statements make the ALU Control Unit
 //All Control Lines Updated in Execute
-void execute(){
+void RISCV::execute(){
     if(op_code == 51){
         op1 = reg[rs1];
         op2 = reg[rs2];
@@ -361,7 +369,7 @@ void execute(){
 
 
 
-void mem()
+void RISCV::mem()
 {
     if (MemRead==1)
     {   
@@ -460,7 +468,7 @@ void mem()
     }
 }
 
-void write_back()
+void RISCV::write_back()
 {   
     if (RegWrite == 1)
     {
