@@ -90,7 +90,7 @@ void run() {
     processor.execute();
     processor.mem();
     processor.write_back();
-    std::cout<<"Clock Cycle "<<std::int<<clock_cycle<<" finished.\n";
+    printf("Clock Cycle %d finished.\n",clock_cycle);
   }
 }
 
@@ -176,7 +176,7 @@ void instruction_exit()
   //Terminate Program and feed all memory into the .mc file
         store_memory();
         fclose(programcode);
-        std::cout<<"Clock Cycle "<<std::int<<clock_cycle<<" finished.\n";
+        printf("Clock Cycle %d finished.\n",clock_cycle);
         exit(0);
 }    
 
@@ -485,12 +485,12 @@ void RISCV::execute(){
         }
     }else if(op_code == 55){
         std::cout << "Operation is LUI, First Operand is " << immU << "\n";
-        ALUres = immU << 12;
+        ALUres = immU;
         RegWrite = 1;
         pc += 4;
     }else if(op_code == 23){
         std::cout << "Operation is AUIPC, First Operand is " << immU << "\n";
-        ALUres = pc + (immU << 12);
+        ALUres = pc + immU;
         RegWrite = 1;
     }else if(op_code == 111){
         std::cout << "Operation is JAL, First Operand is " << immJ << "\n";
