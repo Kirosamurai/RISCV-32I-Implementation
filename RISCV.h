@@ -90,7 +90,7 @@ void run() {
     processor.execute();
     processor.mem();
     processor.write_back();
-    std::cout<<"Clock Cycle "<<clock_cycle<<" finished.\n";
+    std::cout<<"Clock Cycle "<<std::int<<clock_cycle<<" finished.\n";
   }
 }
 
@@ -176,7 +176,7 @@ void instruction_exit()
   //Terminate Program and feed all memory into the .mc file
         store_memory();
         fclose(programcode);
-        std::cout<<"Clock Cycle "<<clock_cycle<<" finished.\n";
+        std::cout<<"Clock Cycle "<<std::int<<clock_cycle<<" finished.\n";
         exit(0);
 }    
 
@@ -325,6 +325,7 @@ void RISCV::decode(){
     if(instruction[31] == 1){
         immJ = -(2097152 - immJ);
     }
+    std::cout<<"DECODE: Decoded the instruction.\n";
 }
 
 //Execute
