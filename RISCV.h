@@ -34,7 +34,6 @@ int immJ = 0;
 
 //Control Lines
 int ALUres = 0;
-int MemAdr = 0;
 int LoadType = 0;
 int StoreType = 0;
 int TakeBranch = 0;
@@ -44,6 +43,14 @@ int RegWrite = 0;
 
 int op1;
 int op2;
+
+
+uint32_t MemAdr = 0;
+std::map<uint32_t, uint8_t> memory;
+
+//map<MemAdr, ByteMemory>
+/*Since byte is the smallest unit of memory being loaded or stored, 
+the map used in this program will have 1-byte addressing.*/
 
 class RISCV{
     
@@ -352,14 +359,7 @@ void execute(){
     }
 }
 
-//int MemAdr = 0;
-//MemAdr int or long?
-// uint32_t MemAdr = 0;
-std::map<uint32_t, uint8_t> memory;
 
-//map<MemAdr, ByteMemory>
-/*Since byte is the smallest unit of memory being loaded or stored, 
-the map used in this program will have 1-byte addressing.*/
 
 void mem()
 {
@@ -372,7 +372,7 @@ void mem()
             //rd = M[rs1+imm][0:7] LB
             case 1: 
                 {   
-                    if (memory.count(MemAdr)==0)
+                    if (memory.find(MemAdr)!=memory.end())
                     {
                         LoadData=0;
                         memory[MemAdr]=0;
@@ -390,7 +390,7 @@ void mem()
             //rd = M[rs1+imm][0:15] LH
             case 2:
                 {
-                    if (memory.count(MemAdr)==0)
+                    if (memory.find(MemAdr)!=memory.end())
                     {
                         LoadData+=0;
                         memory[MemAdr]=0;
@@ -399,7 +399,7 @@ void mem()
                     {   
                         LoadData = memory[MemAdr];
                     }
-                    if (memory.count(MemAdr+1)==0)
+                    if (memory.find(MemAdr+1)!=memory.end())
                     {
                         memory[MemAdr+1]=0;
                     }
@@ -418,7 +418,7 @@ void mem()
                {    
                     for (int i=0; i<4; i++)
                     {   
-                        if (memory.count(MemAdr+i)==0)
+                        if (memory.find(MemAdr+i)!=memory.end())
                         {
                             memory[MemAdr+i]=0;
                         }
@@ -476,12 +476,27 @@ void write_back()
 }
 
 void reset(){
-    int ALUres = 0;
-    int MemAdr = 0;
-    int LoadType = 0;
-    int StoreType = 0;
-    int TakeBranch = 0;
-    int MemRead = 0;
-    int MemWrite = 0;
-    int RegWrite = 0;
+    ALUres = 0;
+    MemAdr = 0;
+    LoadType = 0;
+    StoreType = 0;
+    TakeBranch = 0;
+    MemRead = 0;
+    MemWrite = 0;
+    RegWrite = 0;
+    op_code = 0;
+    rd = 0;
+    f3 = 0;
+    rs1 = 0;
+    rs2 = 0;
+    f7 = 0;
+    immI = 0;
+    immS = 0;
+    immB = 0;
+    immU = 0;
+    immJ = 0;
+    op1 = 0;
+    op2 = 0;
+    LoadData=0;
+    MemAdr = 0;
 }
