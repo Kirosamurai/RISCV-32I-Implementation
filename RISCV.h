@@ -1,6 +1,7 @@
 #include <cstring>
 #include <map>
 #include <iostream>
+#include<stdlib.h>
 
 #define ADD_LEN 32
 #define MEM_SIZE 0x10000
@@ -101,7 +102,7 @@ void load_memory(char *file_name, int N) {
   programcode = fopen(file_name, "r");
   if(programcode == NULL) {
     printf("Error opening input file!\n");
-    abort();
+    exit(1);
   }
   
   //storing value of N:
@@ -176,7 +177,7 @@ void instruction_exit()
         store_memory();
         fclose(programcode);
         std::cout<<"Clock Cycle "<<clock_cycle<<" finished.\n";
-        abort();
+        exit(0);
 }    
 
 void RISCV::fetch()
