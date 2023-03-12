@@ -101,7 +101,7 @@ void load_memory(char *file_name, int N) {
   programcode = fopen(file_name, "r");
   if(programcode == NULL) {
     printf("Error opening input file!\n");
-    exit(1);
+    abort();
   }
   
   //storing value of N:
@@ -176,7 +176,7 @@ void instruction_exit()
         store_memory();
         fclose(programcode);
         std::cout<<"Clock Cycle "<<clock_cycle<<" finished.\n";
-        exit(0);
+        abort();
 }    
 
 void RISCV::fetch()
