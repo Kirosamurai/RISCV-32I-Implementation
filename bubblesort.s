@@ -14,7 +14,8 @@ add x28, x0, x0
 .ml1start:
 bge x28, x3, .ml1
 jal x1, .random
-slli x29, x28, 2
+addi x20, x0, 2
+sll x29, x28, x20
 add x30, x5, x29
 add x31, x6, x29
 sw x9, 0(x30)
@@ -28,14 +29,16 @@ beq x0, x0, .close
 .random:
 add x18, x0, x7
 add x19, x0, x18
-slli x18, x18, 21
+addi x20, x0, 21
+sll x18, x18, x20
 xor x18, x18, x19
 add x19, x0, x18
 addi x20, x0, 35
 srl x18, x18, x20
 xor x18, x18, x19
 add x19, x0, x18
-slli x18, x18, 4
+addi x20, x0, 4
+sll x18, x18, x20
 xor x18, x18, x19
 add x7, x18, x0
 add x9, x18, x0 #return value in x9
