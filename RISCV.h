@@ -99,7 +99,7 @@ void run() {
 void load_memory(char *file_name, int N) {
   
   //instruction memory:
-  programcode = fopen(file_name, "r");
+  programcode = fopen(file_name, "r+");
   if(programcode == NULL) {
     printf("Error opening input file!\n");
     exit(1);
