@@ -58,10 +58,14 @@ public:
     RISCV()
     {
         pc = 0x0;
-        for (int i=0; i<32; i++)
-        {
-            reg[i]=0;
+        //setting empty memory:
+        memory.clear();
+        //setting empty registers:
+        for (int i= 0; i < ADD_LEN; i++) {
+             reg[i] = 0x0;
         }
+        reg[2] = 0x7FFFFFF0;
+        reg[3] = 0x10000000;
     }
     
     uint32_t reg[32];
@@ -97,6 +101,18 @@ uint32_t stringtohex(char input[11])
     return answer;
 }
 
+//Function to store all map memory values into the .mc program file.
+void store_memory()
+{
+    std::map<uint32_t, uint8_t>::iterator it = memory.begin();
+    fseek(programcode, 0, SEEK_END);
+    fprintf(programcode, "\n");
+    while (it != memory.end())
+    {
+        fprintf(programcode, "0x%0x 0x%0x\n",it->first, it->second);
+        ++it;
+    }
+}
 
 void RISCV::fetch()
 {   
@@ -242,6 +258,7 @@ void RISCV::decode(){
         immJ = -(2097152 - immJ);
     }
 }
+
 //Execute
 //PC Values are changed in execute only
 //All the if-else and switch statements make the ALU Control Unit
@@ -387,6 +404,11 @@ void RISCV::execute(){
         op1 = reg[rs1];
         ALUres = pc + 4;
         pc = op1 + immI;
+    }else{
+        //Terminate Program and feed all memory into the .mc file
+        store_memory();
+        fclose(programcode);
+        exit(0);
     }
 }
 
