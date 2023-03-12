@@ -36,4 +36,7 @@ Developer's Name: Rhitvik Anand, 2021CSB1127
 Developer's Mail: rhitvik2000anand@gmail.com / 2021csb1127@iitrpr.ac.in
 
 Developer's Name: Niti Shyamsukha
-Developer's E-Mail: niti200005@gmail.com
+Developer's Mail: niti200005@gmail.com
+
+Developer's Name: Ihita Sinha, 2021CSB1095
+Developer's Mail: 2021csb1095@iitrpr.ac.in
