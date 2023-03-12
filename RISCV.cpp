@@ -457,6 +457,7 @@ void RISCV::mem()
                             LoadData+=0xFFFFFF00;
                         }
                     }
+                    cout<<"MEMORY: Load 1 Byte of Memory Value 0x"<<std::hex<<LoadData<<" from address 0x"<<std::hex<<MemAdr<<'\n';
                     break;
                 }
             //rd = M[rs1+imm][0:15] LH
@@ -483,6 +484,7 @@ void RISCV::mem()
                             LoadData+=0xFFFF0000;
                         }
                     }
+                    cout<<"MEMORY: Load 2 Bytes of Memory Value 0x"<<std::hex<<LoadData<<" from address 0x"<<std::hex<<MemAdr<<'\n';
                     break;
                 }
             //rd = M[rs1+imm][0:31] LW
@@ -499,7 +501,8 @@ void RISCV::mem()
                             LoadData += (memory[MemAdr+i]<<(8*i));
                         }
                     }
-                    break; 
+                   cout<<"MEMORY: Load 4 Bytes of Memory Value 0x"<<std::hex<<LoadData<<" from address 0x"<<std::hex<<MemAdr<<'\n';
+                   break; 
                 }
             default: break;   
         }
@@ -511,12 +514,14 @@ void RISCV::mem()
             case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
             {
                 memory[MemAdr]=reg[rs2];
+                cout<<"MEMORY: Store 1 Byte of Memory Value 0x"<<std::hex<<reg[rs2]<<" to address 0x"<<std::hex<<MemAdr<<'\n';
                 break;
             }
             case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
             {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
+                cout<<"MEMORY: Store 2 Bytes of Memory Value 0x"<<std::hex<<reg[rs2]<<" to address 0x"<<std::hex<<MemAdr<<'\n';
                 break;
             }
             case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
@@ -525,6 +530,7 @@ void RISCV::mem()
                 memory[MemAdr+1]=(reg[rs2]>>8);
                 memory[MemAdr+2]=(reg[rs2]>>16);
                 memory[MemAdr+3]=(reg[rs2]>>24);
+                cout<<"MEMORY: Store 4 Bytes of Memory Value 0x"<<std::hex<<reg[rs2]<<" to address 0x"<<std::hex<<MemAdr<<'\n';
                 break;
             }
             default: break;   
@@ -543,16 +549,11 @@ void RISCV::write_back()
         if(op_code == 3)
         {
             reg[rd] = LoadData;
-            cout<<"WRITEBACK: write "<<LoadData<<" to x"<<rd<<"\n";
         }
         else
         {
             reg[rd] = ALUres;
-            cout<<"WRITEBACK: write "<<ALUres<<" to x"<<rd<<"\n";
         }
     }
-    else
-    {
-        cout<<"WRITEBACK: no operation\n";
 }
 
