@@ -394,6 +394,7 @@ void RISCV::execute(){
         MemAdr = op1 + op2;
         ALUres = 0;
         MemRead = 1;
+        RegWrite = 1;
         pc += 4;
 
         switch (f3){
@@ -484,19 +485,23 @@ void RISCV::execute(){
     }else if(op_code == 55){
         std::cout << "Operation is LUI, First Operand is" << immU << "\n";
         ALUres = immU << 12;
+        RegWrite = 1;
         pc += 4;
     }else if(op_code == 23){
         std::cout << "Operation is AUIPC, First Operand is" << immU << "\n";
         ALUres = pc + (immU << 12);
+        RegWrite = 1;
     }else if(op_code == 111){
         std::cout << "Operation is JAL, First Operand is" << immJ << "\n";
         ALUres = pc + 4;
         pc += immJ;
+        RegWrite = 1;
     }else if(op_code == 103){
         std::cout << "Operation is JALR, First Operand is" << immJ << "\n";
         op1 = reg[rs1];
         ALUres = pc + 4;
         pc = op1 + immI;
+        RegWrite = 1;
     }else{
         instruction_exit();
     }
