@@ -9,6 +9,8 @@ implementation file for simulator
 #include<stdio.h>
 #include<stdlib.h>
 
+#include<string>
+
 RISCV processor;
 
 //run() starts the actual single cycle processor simulator
