@@ -1,9 +1,8 @@
 #SUM OF ARRAY OF N ELEMENTS
 #x3 contains value of N
-#MEM[0x8000] stores array root
-#x9 stores address of array root
-auipc x9 000000010000
-addi x9 x9 000000000000
+
+lui x9 0x10001 #x9 stores address of array root
+
 add x5 x9 x0 #temp
 add x6 x0 x0 #i= 0
 loop:
