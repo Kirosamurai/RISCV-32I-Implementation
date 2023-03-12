@@ -292,21 +292,28 @@ void RISCV::execute(){
         RegWrite = 1;
         pc += 4;
 
+
         if(f3 == 0){
             if(f7 == 0){
                 ALUres = op1 + op2;
+                cout << "Operation is ADD, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
             }
             if(f7 == 32){
                 ALUres = op1 - op2;
+                cout << "Operation is SUB, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
             }
         }else if(f3 == 4){
             ALUres = op1 ^ op2;
+            cout << "Operation is XOR, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
         }else if(f3 == 6){
             ALUres = op1 | op2;
+            cout << "Operation is OR, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
         }else if(f3 == 7){
             ALUres = op1 & op2;
+            cout << "Operation is AND, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
         }else if(f3 == 1){
             ALUres = op1 << op2;
+            cout << "Operation is SLL, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
         }else if(f3 == 5){
             if(f7 == 0){
                 ALUres = op1 >> op2;
@@ -316,6 +323,7 @@ void RISCV::execute(){
             }
         }else if(f3 == 2){
             ALUres = (op1 < op2)?1:0;
+            cout << "Operation is SLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".";
         }
     }else if(op_code == 19){
         op1 = reg[rs1];
@@ -325,10 +333,13 @@ void RISCV::execute(){
 
         if(f3 == 0){
             ALUres = op1 + op2;
+            cout << "Operation is ADDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".";
         }else if(f3 == 7){
             ALUres = op1 & op2;
+            cout << "Operation is ANDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".";
         }else if(f3 == 6){
             ALUres = op1 | op2;
+            cout << "Operation is ORI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".";
         }
     }else if(op_code == 3){
         op1 = reg[rs1];
@@ -342,12 +353,15 @@ void RISCV::execute(){
         switch (f3){
         case 0:
             LoadType = 1;
+            cout << "Operation is LB, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].";
             break;
         case 1:
             LoadType = 2;
+            cout << "Operation is LH, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].";
             break;
         case 2:
             LoadType = 3;
+            cout << "Operation is LW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].";
             break;
         }
     }else if(op_code == 35){
@@ -362,12 +376,15 @@ void RISCV::execute(){
         switch (f3){
         case 0:
             StoreType = 1;
+            cout << "Operation is SB, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].";
             break;
         case 1:
             StoreType = 2;
+            cout << "Operation is SH, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].";
             break;
         case 2:
             StoreType = 3;
+            cout << "Operation is SW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].";
             break;
         }
     }else if(op_code == 99){
@@ -378,6 +395,7 @@ void RISCV::execute(){
 
         switch (f3){
         case 0:
+            cout << "Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2;
             if(ALUres == 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -387,6 +405,7 @@ void RISCV::execute(){
             }
             break;
         case 1:
+            cout << "Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2;
             if(ALUres != 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -396,6 +415,7 @@ void RISCV::execute(){
             }
             break;
         case 4:
+            cout << "Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2;
             if(ALUres < 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -405,6 +425,7 @@ void RISCV::execute(){
             }
             break;
         case 5:
+            cout << "Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2;
             if(ALUres >= 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -415,19 +436,21 @@ void RISCV::execute(){
             break;
         }
     }else if(op_code == 55){
+        cout << "Operation is LUI, First Operand is" << immU;
         ALUres = immU << 12;
         pc += 4;
     }else if(op_code == 23){
+        cout << "Operation is AUIPC, First Operand is" << immU;
         ALUres = pc + (immU << 12);
     }else if(op_code == 111){
+        cout << "Operation is JAL, First Operand is" << immJ;
         ALUres = pc + 4;
         pc += immJ;
     }else if(op_code == 103){
+        cout << "Operation is JALR, First Operand is" << immJ;
         op1 = reg[rs1];
         ALUres = pc + 4;
         pc = op1 + immI;
-    }else{
-        instruction_exit();
     }
 }
 
