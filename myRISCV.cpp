@@ -10,9 +10,6 @@ implementation file for simulator
 #include<stdlib.h>
 
 class RISCV{
-    
-    int read_word(uint32_t addr, char* mem); //check later: do we need?
-    void write_word(char *mem, uint32_t addr, uint32_t data); //check later: do we need?
 
 public:
     //constructor function
@@ -183,6 +180,7 @@ void RISCV::fetch()
         }
         else instruction[i]=0;
     }
+    std::cout<<"FETCH:Fetch instruction "<<currentinstruction<<" from address "<<currentpc<<'\n';
     reset(); //to reset all control lines
 }
 
@@ -531,6 +529,10 @@ void RISCV::mem()
             }
             default: break;   
         }
+    }
+    else
+    {
+       cout<<"MEMORY: No memory operation.\n";
     }
 }
 
