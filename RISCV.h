@@ -180,6 +180,10 @@ void RISCV::decode(){
         immI += instruction[i]*(1<<(i-20));
     }
 
+    if(instruction[31] == 1){
+        immI = -(4096 - immI);
+    }
+
     //Decoding ImmS
     for(int i=7; i<12; i++){
         immS += instruction[i]*(1<<(i-7));
@@ -187,6 +191,10 @@ void RISCV::decode(){
 
     for(int i=25; i<32; i++){
         immS += instruction[i]*(1<<(i-20));
+    }
+
+    if(instruction[31] == 1){
+        immS = -(4096 - immS);
     }
 
     //Decoding ImmB
@@ -204,17 +212,21 @@ void RISCV::decode(){
 
     immB *= 2; //0th bit is always 0
 
+    if(instruction[31] == 1){
+        immB = -(8192 - immB);
+    }
+
     //Decoding ImmU
     for(int i=12; i<32; i++){
-        immU += instruction[i]*(1<<(i-12));
+        immU += instruction[i]*(1<<i);
     }
 
     //Decoding ImmJ
-    for(int i=20; i<31; i++){
+    for(int i=21; i<31; i++){
         immJ += instruction[i]*(1<<(i-20));
     }
     
-    immJ += instruction[19]*(1<<11);
+    immJ += instruction[20]*(1<<11);
 
     for(int i=12; i<20; i++){
         immJ += instruction[i]*(1<<i);
@@ -222,9 +234,10 @@ void RISCV::decode(){
 
     immJ += instruction[31]*(1<<20);
 
-    immJ *= 2; //0th bit is always 0
+    if(instruction[31] == 1){
+        immJ = -(2097152 - immJ);
+    }
 }
-
 //Execute
 //PC Values are changed in execute only
 //All the if-else and switch statements make the ALU Control Unit
