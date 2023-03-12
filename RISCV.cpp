@@ -9,7 +9,7 @@ implementation file for simulator
 #include<stdio.h>
 #include<stdlib.h>
 
-#include<string>
+#include<cstring>
 #include<map>
 
 RISCV processor;
