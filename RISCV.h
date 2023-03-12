@@ -625,12 +625,12 @@ void RISCV::write_back()
         if(op_code == 3)
         {
             reg[rd] = LoadData;
-            std::cout<<"WRITEBACK: Write "<<std::hex<<LoadData<<" to x"<<rd<<"\n";
+            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<LoadData<<" to x"<<rd<<"\n";
         }
         else
         {
             reg[rd] = ALUres;
-            std::cout<<"WRITEBACK: Write "<<std::hex<<ALUres<<" to x"<<rd<<"\n";
+            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<ALUres<<" to x"<<rd<<"\n";
         }
     }
     else
