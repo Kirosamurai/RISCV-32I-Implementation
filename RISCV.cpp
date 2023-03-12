@@ -9,33 +9,20 @@ implementation file for simulator
 #include<stdio.h>
 #include<stdlib.h>
 
-class RISCV{
+//run() starts the actual single cycle processor simulator
+void run() {
+  RISCV processor;
+  while(1) {
+    clock_cycle++;
+    processor.fetch();
+    processor.decode();
+    processor.execute();
+    processor.mem();
+    processor.write_back();
+    std::cout<<"Clock Cycle "<<clock_cycle<<" finished.\n";
+  }
+}
 
-public:
-    //constructor function
-    RISCV()
-    {
-        pc = 0x0;
-        //setting empty memory:
-        memory.clear();
-        //setting empty registers:
-        for (int i= 0; i < ADD_LEN; i++) {
-             reg[i] = 0x0;
-        }
-        reg[2] = 0x7FFFFFF0; //Stack Pointer
-        reg[3] = 0x10000000; //Data Pointer
-    }
-    
-    uint32_t reg[32];
-    uint32_t pc;
-    RISCV(char* file_name, uint32_t mem_start);
-    void run();
-    void fetch();
-    void decode();
-    void execute();
-    void mem();
-    void write_back();
-};
 
 //load_program_memory(char *file_name, int n) populates the instruction memory from file_name and stores value of N (required for all test files) to x3 in register file
 void load_memory(char *file_name, int N) {
@@ -48,22 +35,9 @@ void load_memory(char *file_name, int N) {
   }
   
   //storing value of N:
-  reg[3] = N;
+  processor.reg[3] = N;
 }
 
-//run() starts the actual single cycle processor simulator
-void run() {
-  RISCV processor;
-  while(1) {
-    clock++;
-    processor.fetch();
-    processor.decode();
-    processor.execute();
-    processor.mem();
-    processor.write_back();
-    std::cout<<"Clock Cycle "<<clock<<" finished.\n";
-  }
-}
 
 void reset(){
     ALUres = 0;
@@ -131,7 +105,7 @@ void instruction_exit()
   //Terminate Program and feed all memory into the .mc file
         store_memory();
         fclose(programcode);
-        std::cout<<"Clock Cycle "<<clock<<" finished.\n";
+        std::cout<<"Clock Cycle "<<clock_cycle<<" finished.\n";
         exit(0);
 }    
 
