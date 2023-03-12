@@ -131,6 +131,7 @@ void instruction_exit()
   //Terminate Program and feed all memory into the .mc file
         store_memory();
         fclose(programcode);
+        std::cout<<"Clock Cycle "<<clock<<" finished.\n";
         exit(0);
 }    
 
