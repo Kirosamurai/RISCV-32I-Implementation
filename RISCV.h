@@ -1,5 +1,6 @@
 #include <string>
 #include <map>
+#include <iostream>
 
 #define ADD_LEN 32
 #define MEM_SIZE 0x10000
@@ -40,6 +41,7 @@ int op1;
 int op2;
 
 uint32_t MemAdr = 0;
+uint32_t LoadData = 0;
 std::map<uint32_t, uint8_t> memory;
 
 //map<MemAdr, ByteMemory>
@@ -358,11 +360,11 @@ void RISCV::execute(){
     }else if(op_code == 23){
         ALUres = pc + (immU << 12);
     }else if(op_code == 111){
-        ALUres = PC + 4;
+        ALUres = pc + 4;
         pc += immJ;
     }else if(op_code == 103){
         op1 = reg[rs1];
-        ALUres = PC + 4;
+        ALUres = pc + 4;
         pc = op1 + immI;
     }
 }
