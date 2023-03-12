@@ -112,15 +112,19 @@ void RISCV::fetch()
     }
     else if (currentpc_number>pc)
     {
-        if (fseek(programcode, 0, SEEK_SET)!= 0) 
+        if (pc%4==0) //PC address should be valid [aligned addressing]
         {
-            std::cout<<"Repositioning error. Check File Handling!"; 
+            if (fseek(programcode, 0, SEEK_SET)!= 0) 
+            {
+                std::cout<<"Repositioning error. Check File Handling!\n"; 
+            }
+            while (currentpc_number!=pc)
+            {   
+                fscanf(programcode,"%s %s",currentpc, currentinstruction);
+                currentpc_number = stringtohex(currentpc);
+            }
         }
-        while ((currentpc_number!=pc)&&(strcmp(currentinstruction,"0xffffffff")))
-        {   
-            fscanf(programcode,"%s %s",currentpc, currentinstruction);
-            currentpc_number = stringtohex(currentpc);
-        }
+        else strcpy(currentinstruction, "0xffffffff");
     }
     else 
     {   
