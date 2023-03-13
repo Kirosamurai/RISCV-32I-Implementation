@@ -450,7 +450,7 @@ void RISCV::execute(){
 
         switch (f3){
         case 0:
-            std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
             if(ALUres == 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -460,7 +460,7 @@ void RISCV::execute(){
             }
             break;
         case 1:
-            std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
             if(ALUres != 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -480,7 +480,7 @@ void RISCV::execute(){
             }
             break;
         case 5:
-            std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
             if(ALUres >= 0){
                 TakeBranch = 1;
                 pc += immB;
