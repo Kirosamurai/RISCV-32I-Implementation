@@ -505,7 +505,7 @@ void RISCV::execute(){
         pc += immJ;
         RegWrite = 1;
     }else if(op_code == 103){
-        std::cout << "EXECUTE: Operation is JALR, First Operand is " << immJ << "\n";
+        std::cout << "EXECUTE: Operation is JALR, First Operand is " << immI << "\n";
         op1 = reg[rs1];
         ALUres = pc + 4;
         pc = op1 + immI;
@@ -540,7 +540,7 @@ void RISCV::mem()
                             LoadData+=0xFFFFFF00;
                         }
                     }
-                    std::cout<<"MEMORY: Load 1 Byte of Memory Value 0x"<<std::hex<<LoadData<<" from address 0x"<<std::hex<<MemAdr<<'\n';
+                    std::cout<<"MEMORY: Load 1 Byte of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
                     break;
                 }
             //rd = M[rs1+imm][0:15] LH
@@ -567,7 +567,7 @@ void RISCV::mem()
                             LoadData+=0xFFFF0000;
                         }
                     }
-                    std::cout<<"MEMORY: Load 2 Bytes of Memory Value 0x"<<std::hex<<LoadData<<" from address 0x"<<std::hex<<MemAdr<<'\n';
+                    std::cout<<"MEMORY: Load 2 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
                     break;
                 }
             //rd = M[rs1+imm][0:31] LW
@@ -584,7 +584,7 @@ void RISCV::mem()
                             LoadData += (memory[MemAdr+i]<<(8*i));
                         }
                     }
-                   std::cout<<"MEMORY: Load 4 Bytes of Memory Value 0x"<<std::hex<<LoadData<<" from address 0x"<<std::hex<<MemAdr<<'\n';
+                   std::cout<<"MEMORY: Load 4 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
                    break; 
                 }
             default: break;   
@@ -597,14 +597,14 @@ void RISCV::mem()
             case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
             {
                 memory[MemAdr]=reg[rs2];
-                std::cout<<"MEMORY: Store 1 Byte of Memory Value 0x"<<std::hex<<reg[rs2]<<" to address 0x"<<std::hex<<MemAdr<<'\n';
+                std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "MemAdr<<'\n';
                 break;
             }
             case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
             {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
-                std::cout<<"MEMORY: Store 2 Bytes of Memory Value 0x"<<std::hex<<reg[rs2]<<" to address 0x"<<std::hex<<MemAdr<<'\n';
+                std::cout<<"MEMORY: Store 2 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
                 break;
             }
             case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
@@ -613,7 +613,7 @@ void RISCV::mem()
                 memory[MemAdr+1]=(reg[rs2]>>8);
                 memory[MemAdr+2]=(reg[rs2]>>16);
                 memory[MemAdr+3]=(reg[rs2]>>24);
-                std::cout<<"MEMORY: Store 4 Bytes of Memory Value 0x"<<std::hex<<reg[rs2]<<" to address 0x"<<std::hex<<MemAdr<<'\n';
+                std::cout<<"MEMORY: Store 4 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
                 break;
             }
             default: break;   
@@ -633,12 +633,12 @@ void RISCV::write_back()
         if(op_code == 3)
         {
             reg[rd] = LoadData;
-            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<LoadData<<" to R"<<rd<<"\n";
+            std::cout<<"WRITEBACK: Write "<<LoadData<<" to R"<<rd<<"\n";
         }
         else
         {
             reg[rd] = ALUres;
-            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<ALUres<<" to R"<<rd<<"\n";
+            std::cout<<"WRITEBACK: Write "<<ALUres<<" to R"<<rd<<"\n";
         }
     }
     else
