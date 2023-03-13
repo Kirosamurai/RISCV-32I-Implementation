@@ -91,11 +91,12 @@ void run() {
     processor.mem();
     processor.write_back();
     printf("Clock Cycle %d finished.\n",clock_cycle);
+    std::cout<<"--------------------------------------------------\n\n";
   }
 }
 
 
-//load_program_memory(char *file_name, int n) populates the instruction memory from file_name and stores value of N (required for all test files) to x3 in register file
+//load_program_memory(char *file_name, int n) populates the instruction memory from file_name and stores value of N (required for all test files) to R3 in register file
 void load_memory(char *file_name, int N) {
   
   //instruction memory:
@@ -177,9 +178,12 @@ void instruction_exit()
         store_memory();
         fclose(programcode);
         printf("Clock Cycle %d finished.\n",clock_cycle);
+        std::cout<<"--------------------------------------------------\n\n";
+        std::cout<<"EXITING PROGRAM. BYE\n";
         exit(0);
 }    
 
+//------------------------------------------FETCH()------------------------------------------
 void RISCV::fetch()
 {   
     // what does processor do if pc location is invalid?: sends to end of program [program terminated.]
@@ -226,11 +230,11 @@ void RISCV::fetch()
         }
         else instruction[i]=0;
     }
-    std::cout<<"FETCH:Fetch instruction "<<currentinstruction<<" from address "<<currentpc<<'\n';
+    std::cout<<"FETCH: Fetch instruction "<<currentinstruction<<" from address "<<currentpc<<'\n';
     reset(); //to reset all control lines
 }
 
-//Decode
+//------------------------------------------DECODE()------------------------------------------
 void RISCV::decode(){
 
     //Decoding opcode
@@ -328,7 +332,7 @@ void RISCV::decode(){
     std::cout<<"DECODE: Decoded the instruction.\n";
 }
 
-//Execute
+//------------------------------------------EXECUTE()------------------------------------------
 //PC Values are changed in execute only
 //All the if-else and switch statements make the ALU Control Unit
 //All Control Lines Updated in Execute
@@ -343,36 +347,36 @@ void RISCV::execute(){
         if(f3 == 0){
             if(f7 == 0){
                 ALUres = op1 + op2;
-                std::cout << "Operation is ADD, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+                std::cout << "EXECUTE: Operation is ADD, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
             if(f7 == 32){
                 ALUres = op1 - op2;
-                std::cout << "Operation is SUB, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+                std::cout << "EXECUTE: Operation is SUB, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
         }else if(f3 == 4){
             ALUres = op1 ^ op2;
-            std::cout << "Operation is XOR, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is XOR, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 6){
             ALUres = op1 | op2;
-            std::cout << "Operation is OR, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is OR, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 7){
             ALUres = op1 & op2;
-            std::cout << "Operation is AND, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is AND, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 1){
             ALUres = op1 << op2;
-            std::cout << "Operation is SLL, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is SLL, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 5){
             if(f7 == 0){
                 ALUres = (int)((unsigned int)op1 >> op2);
-                std::cout << "Operation is SRL, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+                std::cout << "EXECUTE: Operation is SRL, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
             if(f7 == 32){
                 ALUres = op1 >> op2;
-                std::cout << "Operation is SRA, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+                std::cout << "EXECUTE: Operation is SRA, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
         }else if(f3 == 2){
             ALUres = (op1 < op2)?1:0;
-            std::cout << "Operation is SLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is SLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
         }
     }else if(op_code == 19){
         op1 = reg[rs1];
@@ -382,13 +386,13 @@ void RISCV::execute(){
 
         if(f3 == 0){
             ALUres = op1 + op2;
-            std::cout << "Operation is ADDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is ADDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 7){
             ALUres = op1 & op2;
-            std::cout << "Operation is ANDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is ANDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 6){
             ALUres = op1 | op2;
-            std::cout << "Operation is ORI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is ORI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
         }
     }else if(op_code == 3){
         op1 = reg[rs1];
@@ -403,15 +407,15 @@ void RISCV::execute(){
         switch (f3){
         case 0:
             LoadType = 1;
-            std::cout << "Operation is LB, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
+            std::cout << "EXECUTE: Operation is LB, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         case 1:
             LoadType = 2;
-            std::cout << "Operation is LH, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
+            std::cout << "EXECUTE: Operation is LH, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         case 2:
             LoadType = 3;
-            std::cout << "Operation is LW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
+            std::cout << "EXECUTE: Operation is LW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         }
     }else if(op_code == 35){
@@ -426,15 +430,15 @@ void RISCV::execute(){
         switch (f3){
         case 0:
             StoreType = 1;
-            std::cout << "Operation is SB, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
+            std::cout << "EXECUTE: Operation is SB, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         case 1:
             StoreType = 2;
-            std::cout << "Operation is SH, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
+            std::cout << "EXECUTE: Operation is SH, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         case 2:
             StoreType = 3;
-            std::cout << "Operation is SW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
+            std::cout << "EXECUTE: Operation is SW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         }
     }else if(op_code == 99){
@@ -445,7 +449,7 @@ void RISCV::execute(){
 
         switch (f3){
         case 0:
-            std::cout << "Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
+            std::cout << "EXECUTE: Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres == 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -455,7 +459,7 @@ void RISCV::execute(){
             }
             break;
         case 1:
-            std::cout << "Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
+            std::cout << "EXECUTE: Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres != 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -465,7 +469,7 @@ void RISCV::execute(){
             }
             break;
         case 4:
-            std::cout << "Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
+            std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres < 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -475,7 +479,7 @@ void RISCV::execute(){
             }
             break;
         case 5:
-            std::cout << "Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
+            std::cout << "EXECUTE: Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres >= 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -486,33 +490,31 @@ void RISCV::execute(){
             break;
         }
     }else if(op_code == 55){
-        std::cout << "Operation is LUI, First Operand is " << immU << "\n";
+        std::cout << "EXECUTE: Operation is LUI, First Operand is " << immU << "\n";
         ALUres = immU;
         RegWrite = 1;
         pc += 4;
     }else if(op_code == 23){
-        std::cout << "Operation is AUIPC, First Operand is " << immU << "\n";
+        std::cout << "EXECUTE: Operation is AUIPC, First Operand is " << immU << "\n";
         ALUres = pc + immU;
         RegWrite = 1;
     }else if(op_code == 111){
-        std::cout << "Operation is JAL, First Operand is " << immJ << "\n";
+        std::cout << "EXECUTE: Operation is JAL, First Operand is " << immJ << "\n";
         ALUres = pc + 4;
         pc += immJ;
         RegWrite = 1;
     }else if(op_code == 103){
-        std::cout << "Operation is JALR, First Operand is " << immJ << "\n";
+        std::cout << "EXECUTE: Operation is JALR, First Operand is " << immJ << "\n";
         op1 = reg[rs1];
         ALUres = pc + 4;
         pc = op1 + immI;
         RegWrite = 1;
     }else{
-        std::cout<<"Storing Memory in the program file.\n";
         instruction_exit();
     }
 }
 
-
-
+//------------------------------------------MEM()------------------------------------------
 void RISCV::mem()
 {
     if (MemRead==1)
@@ -622,6 +624,7 @@ void RISCV::mem()
     }
 }
 
+//------------------------------------------WRITE_BACK()------------------------------------------
 void RISCV::write_back()
 {   
     if (RegWrite == 1)
@@ -629,12 +632,12 @@ void RISCV::write_back()
         if(op_code == 3)
         {
             reg[rd] = LoadData;
-            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<LoadData<<" to x"<<rd<<"\n";
+            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<LoadData<<" to R"<<rd<<"\n";
         }
         else
         {
             reg[rd] = ALUres;
-            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<ALUres<<" to x"<<rd<<"\n";
+            std::cout<<"WRITEBACK: Write 0x"<<std::hex<<ALUres<<" to R"<<rd<<"\n";
         }
     }
     else
