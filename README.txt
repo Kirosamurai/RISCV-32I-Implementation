@@ -55,7 +55,7 @@ How to build
 
 For single cycle processor:
   $cd src
-  $make all
+  $make
 
 For cleaning the project:
   $cd src
@@ -65,10 +65,10 @@ How to execute
 --------------
 
 To execute with default value of N (=5):
-	./RISCV test/<file name>.mc
+	 ../bin/RISCV ../test/<file name>.mc
 
 To execute with specific value of N:
-	./RISCV test/<file name>.mc <N>
+	../bin/RISCV ../test/<file name>.mc <N>
 
 Note:
 	<file name> cane be replaced with:
@@ -77,3 +77,4 @@ Note:
 		3. fibonacci
 	<N> can be replaced with:
 		any positive integer
+	After every execution, the memory is saved into the .mc file so it must be manually erased everytime.
