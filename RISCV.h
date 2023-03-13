@@ -364,9 +364,11 @@ void RISCV::execute(){
         }else if(f3 == 5){
             if(f7 == 0){
                 ALUres = (int)((unsigned int)op1 >> op2);
+                std::cout << "Operation is SRL, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
             if(f7 == 32){
                 ALUres = op1 >> op2;
+                std::cout << "Operation is SRA, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
         }else if(f3 == 2){
             ALUres = (op1 < op2)?1:0;
