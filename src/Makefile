@@ -9,11 +9,11 @@ DEP = $(patsubset %,$(INCDIR)/%,$(_DEP))
 _OBJ = main.o RISCV.o
 OBJ = $(patsubset %,$(OBJDIR)/%,$(_OBJ))
 
-$(OBJDIR)/%.o: %.cpp $(DEP)
-	$(CXX) -c -o $@ $< $(CXXFLAGS)
-
 all: $(OBJ)
 	$(CXX) -o ../bin/RISCV $^ $(CXXFLAGS)
+	
+$(OBJDIR)/%.o: %.cpp $(DEP)
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 .PHONY: clean
 
