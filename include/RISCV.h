@@ -1,7 +1,7 @@
 #include <cstring>
 #include <map>
 #include <iostream>
-#include<stdlib.h>
+#include <stdlib.h>
 
 #define ADD_LEN 32
 #define MEM_SIZE 0x10000
@@ -20,11 +20,10 @@ int f7 = 0;
 int immI = 0;
 int immS = 0;
 int immB = 0;
-int immU = 0;
+long immU = 0;
 int immJ = 0;
 
 //Control Lines
-int ALUres = 0;
 int LoadType = 0;
 int StoreType = 0;
 int TakeBranch = 0;
@@ -36,7 +35,8 @@ int op1;
 int op2;
 
 uint32_t MemAdr = 0;
-uint32_t LoadData = 0;
+long LoadData = 0;
+long ALUres = 0;
 std::map<uint32_t, uint8_t> memory;
 
 //map<MemAdr, ByteMemory>
@@ -59,7 +59,6 @@ public:
         reg[2] = 0x7FFFFFF0; //Stack Pointer
         reg[3] = 0x10000000; //Data Pointer
     }
-    
     uint32_t reg[32];
     uint32_t pc;
     RISCV(char* file_name, uint32_t mem_start);
@@ -180,7 +179,7 @@ void instruction_exit()
         printf("Clock Cycle %d finished.\n",clock_cycle);
         std::cout<<"--------------------------------------------------\n\n";
         std::cout<<"Feeding all memory to .mc file.\nProgram took  "<<clock_cycle<<" clockcycles.\n";
-        std::cout<<"ENDING SIMULATOR. bye :)\n";
+        std::cout<<"ENDING SIMULATOR.\n";
         exit(0);
 }    
 
@@ -292,18 +291,16 @@ void RISCV::decode(){
 
     //Decoding ImmB
     for(int i=8; i<12; i++){
-        immB += instruction[i]*(1<<(i-8));
+        immB += instruction[i]*(1<<(i-7));
     }
 
     for(int i=25; i<31; i++){
-        immB += instruction[i]*(1<<(i-21));
+        immB += instruction[i]*(1<<(i-20));
     }
 
-    immB += instruction[7]*(1<<10);
+    immB += instruction[7]*(1<<11);
     
-    immB += instruction[31]*(1<<11);
-
-    immB *= 2; //0th bit is always 0
+    immB += instruction[31]*(1<<12);
 
     if(instruction[31] == 1){
         immB = -(8192 - immB);
@@ -312,6 +309,10 @@ void RISCV::decode(){
     //Decoding ImmU
     for(int i=12; i<32; i++){
         immU += instruction[i]*(1<<i);
+    }
+
+    if(instruction[31] == 1){
+        immU = -(4294967254 - immU);
     }
 
     //Decoding ImmJ
@@ -347,11 +348,11 @@ void RISCV::execute(){
 
         if(f3 == 0){
             if(f7 == 0){
-                ALUres = op1 + op2;
+                ALUres = (long) op1 + op2;
                 std::cout << "EXECUTE: Operation is ADD, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
             if(f7 == 32){
-                ALUres = op1 - op2;
+                ALUres = (long) op1 - op2;
                 std::cout << "EXECUTE: Operation is SUB, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
             }
         }else if(f3 == 4){
@@ -386,7 +387,7 @@ void RISCV::execute(){
         pc += 4;
 
         if(f3 == 0){
-            ALUres = op1 + op2;
+            ALUres = (long) op1 + op2;
             std::cout << "EXECUTE: Operation is ADDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 7){
             ALUres = op1 & op2;
@@ -446,11 +447,11 @@ void RISCV::execute(){
         op1 = reg[rs1];
         op2 = reg[rs2];
 
-        ALUres = op1 - op2;
+        ALUres = (long) op1 - op2;
 
         switch (f3){
         case 0:
-            std::cout << "EXECUTE: Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres == 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -460,7 +461,7 @@ void RISCV::execute(){
             }
             break;
         case 1:
-            std::cout << "EXECUTE: Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres != 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -470,7 +471,7 @@ void RISCV::execute(){
             }
             break;
         case 4:
-            std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres < 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -480,7 +481,7 @@ void RISCV::execute(){
             }
             break;
         case 5:
-            std::cout << "EXECUTE: Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n" << "ALUres is" << ALUres;
+            std::cout << "EXECUTE: Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres >= 0){
                 TakeBranch = 1;
                 pc += immB;
@@ -528,7 +529,7 @@ void RISCV::mem()
             //rd = M[rs1+imm][0:7] LB
             case 1: 
                 {   
-                    if (memory.find(MemAdr)!=memory.end())
+                    if (memory.find(MemAdr)==memory.end())
                     {
                         LoadData=0;
                         memory[MemAdr]=0;
@@ -547,7 +548,7 @@ void RISCV::mem()
             //rd = M[rs1+imm][0:15] LH
             case 2:
                 {
-                    if (memory.find(MemAdr)!=memory.end())
+                    if (memory.find(MemAdr)==memory.end())
                     {
                         LoadData+=0;
                         memory[MemAdr]=0;
@@ -556,7 +557,7 @@ void RISCV::mem()
                     {   
                         LoadData = memory[MemAdr];
                     }
-                    if (memory.find(MemAdr+1)!=memory.end())
+                    if (memory.find(MemAdr+1)==memory.end())
                     {
                         memory[MemAdr+1]=0;
                     }
@@ -574,16 +575,23 @@ void RISCV::mem()
             //rd = M[rs1+imm][0:31] LW
             case 3: 
                {    
-                    for (int i=0; i<4; i++)
+                    int loop;
+                    for (loop=0; loop<4; loop++)
                     {   
-                        if (memory.find(MemAdr+i)!=memory.end())
-                        {
-                            memory[MemAdr+i]=0;
+                        if ((memory.find(MemAdr+loop))==(memory.end()))
+                        {   
+                            memory[MemAdr+loop]=0;
                         }
                         else
                         {   
-                            LoadData += (memory[MemAdr+i]<<(8*i));
+                            LoadData += (memory[MemAdr+loop]<<(8*loop));
                         }
+                    }
+                    //if ((memory[MemAdr+loop]&(1<<7))!=0)
+                    if (LoadData>2147483647)
+                    {
+                        //Data to be loaded is negative.
+                        LoadData = -(4294967294 - LoadData);
                     }
                    std::cout<<"MEMORY: Load 4 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
                    break; 
@@ -641,10 +649,10 @@ void RISCV::write_back()
             reg[rd] = ALUres;
             std::cout<<"WRITEBACK: Write "<<ALUres<<" to R"<<rd<<"\n";
         }
+        reg[0]=0;
     }
     else
     {
         std::cout<<"WRITEBACK: No register writeback operation.\n";
     }
 }
-
