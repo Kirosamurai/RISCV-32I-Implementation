@@ -598,7 +598,7 @@ void RISCV::mem()
             case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
             {
                 memory[MemAdr]=reg[rs2];
-                std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "MemAdr<<'\n';
+                std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
                 break;
             }
             case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
