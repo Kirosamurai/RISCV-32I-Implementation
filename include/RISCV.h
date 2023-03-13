@@ -179,7 +179,8 @@ void instruction_exit()
         fclose(programcode);
         printf("Clock Cycle %d finished.\n",clock_cycle);
         std::cout<<"--------------------------------------------------\n\n";
-        std::cout<<"EXITING PROGRAM. BYE\n";
+        std::cout<<"Feeding all memory to .mc file.\nProgram took  "<<clock_cycle<<" clockcycles.\n";
+        std::cout<<"ENDING SIMULATOR. bye :)\n";
         exit(0);
 }    
 
