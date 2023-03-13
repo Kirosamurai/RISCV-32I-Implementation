@@ -499,6 +499,7 @@ void RISCV::execute(){
         std::cout << "EXECUTE: Operation is AUIPC, First Operand is " << immU << "\n";
         ALUres = pc + immU;
         RegWrite = 1;
+        pc += 4;
     }else if(op_code == 111){
         std::cout << "EXECUTE: Operation is JAL, First Operand is " << immJ << "\n";
         ALUres = pc + 4;
