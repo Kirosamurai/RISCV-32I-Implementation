@@ -1,21 +1,5 @@
-INCDIR = ../include
-CXX = g++
-CXXFLAGS = -I$(INC)
-OBJDIR = obj
-
-_DEP = RISCV.h
-DEP = $(patsubset %,$(INCDIR)/%,$(_DEP))
-
-_OBJ = main.o RISCV.o
-OBJ = $(patsubset %,$(OBJDIR)/%,$(_OBJ))
-
-all: $(OBJ)
-	$(CXX) -o ../bin/RISCV $^ $(CXXFLAGS)
-	
-$(OBJDIR)/%.o: %.cpp $(DEP)
-	$(CXX) -c -o $@ $< $(CXXFLAGS)
-
-.PHONY: clean
+all:
+	g++ RISCV.cpp main.cpp -I ../include -o ../bin/RISCV
 
 clean:
-	rm -f $(OBJDIR)/*.o *~ *.bak ../bin/RISCV
+	rm -f *.o *~ *.bak ../bin/RISCV
