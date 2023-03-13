@@ -638,18 +638,21 @@ void RISCV::mem()
 void RISCV::write_back()
 {   
     if (RegWrite == 1)
-    {
-        if(op_code == 3)
+    {   
+        if (rd!=0)
         {
-            reg[rd] = LoadData;
-            std::cout<<"WRITEBACK: Write "<<LoadData<<" to R"<<rd<<"\n";
+            if(op_code == 3)
+            {
+                reg[rd] = LoadData;
+                std::cout<<"WRITEBACK: Write "<<LoadData<<" to R"<<rd<<"\n";
+            }
+            else
+            {
+                reg[rd] = ALUres;
+                std::cout<<"WRITEBACK: Write "<<ALUres<<" to R"<<rd<<"\n";
+            }
         }
-        else
-        {
-            reg[rd] = ALUres;
-            std::cout<<"WRITEBACK: Write "<<ALUres<<" to R"<<rd<<"\n";
-        }
-        reg[0]=0;
+        else std::cout<<"WRITEBACK: Write 0 to R0\n";
     }
     else
     {
