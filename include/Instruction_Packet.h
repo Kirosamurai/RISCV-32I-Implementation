@@ -6,6 +6,7 @@
 #include <string>
 
 #include "RISCV.h"
+#include "GUI.h"
 
 //Acts as a mediator before writing to register, just to store the data
 struct InstructionPacket{
