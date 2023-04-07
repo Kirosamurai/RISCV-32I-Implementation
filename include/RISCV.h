@@ -7,6 +7,14 @@
 #include <stdlib.h>
 #include <bitset>
 
+//-------------------------------------------------------------------------------------
+//json file code starts
+
+#include "GUI.h"
+
+//json file code ends
+//-------------------------------------------------------------------------------------
+
 #define ADD_LEN 32
 #define MEM_SIZE 0x10000
 
