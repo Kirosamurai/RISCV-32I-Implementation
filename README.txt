@@ -1,6 +1,7 @@
 # RISCV-32I-Implementation
+
 --------------------------------------------------------
-A C++ implementation of RISCV-32I Single cycle processor
+A C++ implementation of RISCV-32I Processor
 --------------------------------------------------------
 
 README
@@ -10,6 +11,7 @@ Table of contents:
 2. Directory Structure
 3. How to build
 4. How to execute
+5. How to view output
 
 Developer Details
 -----------------
@@ -31,14 +33,19 @@ Directory Structure
 
 RISCV-32I-Implementation
   |
-  |- Project Statement
   |- bin
     |- RISCV
   |- doc
     |- Design Doc.docx
   |- include
+    |- Core.h
+    |- Instruction_Packet.h
+    |- Pipeline.h
     |- RISCV.h
   |- src
+    |- Core.cpp
+    |- Instruction_Packet.cpp
+    |- Pipeline.cpp
     |- main.cpp
     |- Makefile
     |- RISCV.cpp
@@ -53,7 +60,7 @@ RISCV-32I-Implementation
 How to build
 ------------
 
-For single cycle processor:
+For compiling:
   $cd src
   $make
 
@@ -64,17 +71,28 @@ For cleaning the project:
 How to execute
 --------------
 
-To execute with default value of N (=5):
-	 ../bin/RISCV ../test/<file name>.mc
+Command to execute program:
+../bin/RISCV <knobs>
 
-To execute with specific value of N:
-	../bin/RISCV ../test/<file name>.mc <N>
+<knobs> --
+          | -test <filename.mc>
+          | -n <value of N>
+          | -pipeline
+          | -forward
+          | -trace [<instruction number>]
+          | -registers
+          | -h (or) -help
 
-Note:
-	<file name> cane be replaced with:
-		1. array_sum
-		2. bubblesort
-		3. fibonacci
-	<N> can be replaced with:
-		any positive integer
-	After every execution, the memory is saved into the .mc file so it must be manually erased everytime.
+(compulsory knob: -test <filename.mc>)
+(all other knobs are optional:
+          | -h (or) -help will show how to execute
+          | default value of N is 5
+          | default setting of pipelining, forwarding, tracing, and showing register values is off
+          | if forward/trace is called without calling pipeline, it doesn't do anything
+          | providing instruction number after -trace knob will activate tracing for that particular instruction only, otherwise for all instructions
+          | -registers knob will show values in register file after every cycle)
+
+How to view output
+------------------
+
+All data memory is stored in file ../src/Data Memory.mc
