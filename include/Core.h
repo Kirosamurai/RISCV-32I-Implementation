@@ -9,6 +9,7 @@
 #include "Pipeline.h"
 #include "Instruction_Packet.h"
 #include "RISCV.h"
+#include "GUI.h"
 
 class Core {
 
