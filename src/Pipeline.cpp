@@ -85,7 +85,7 @@ void PipelineRegister::WriteToRegister(InstructionPacket &A) {
 
 //Data strucutre for BRANCH TARGET BUFFER (BTB)
 //btb is map from uint32_t to pair of bool and uint32_t
-std::map<uint32_t, std::pair<bool, uint32_t>> btb;
+std::map<uint32_t, std::pair<bool, uint32_t> > btb;
 
 //Function checks if predited value of branch taken / not taken is correct or not
 //If not correct, updates the value in BTB
@@ -93,7 +93,8 @@ int checkPredict() {
 
     if(btb.find(EX_MA.current_pc_pl) == btb.end()){
         
-        btb[EX_MA.current_pc_pl] = {1, EX_MA.current_pc_pl + EX_MA.immB_pl};
+        btb[EX_MA.current_pc_pl].first = 1;
+        btb[EX_MA.current_pc_pl].second = EX_MA.current_pc_pl + EX_MA.immB_pl;
         if (EX_MA.TakeBranch_pl) {
             processor.new_pc = EX_MA.current_pc_pl + EX_MA.immB_pl;
             return 1;
@@ -186,6 +187,7 @@ int isDataDependency() {
             
             case 2:
             return 2; //Load Type
+            break;
         }
     }else if(MA_WB.isConflict()){
         switch (MA_WB.isConflict()){
@@ -197,7 +199,7 @@ int isDataDependency() {
             return 4; //Load Type
             break;
         }
-    }
+    }else return 0;
 }
 
 //Checks if a branch instruction has been executed
@@ -212,9 +214,8 @@ int isControlDependency() {
         return 2; //JAL
     } else if (EX_MA.op_code_pl == 103) {
         return 3; //JALR
-    } else {
-        return 0;
     }
+    return 0;
 }
 
 //Sets all values in pipeline register to 0
