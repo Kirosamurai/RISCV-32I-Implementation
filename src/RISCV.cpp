@@ -3,64 +3,34 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include"RISCV.h"
+#include <string>
 
-RISCV processor;
+#include "RISCV.h"
 
-//run() starts the actual single cycle processor simulator
-void run() {
-  while(1) {
-    processor.clock_cycle++;
-    processor.fetch();
-    processor.decode();
-    processor.execute();
-    processor.mem();
-    processor.write_back();
-    printf("Clock Cycle %d finished.\n",processor.clock_cycle);
-    std::cout<<"--------------------------------------------------\n\n";
-  }
-}
-
-
-//load_program_memory(char *file_name, int n) populates the instruction memory from file_name and stores value of N (required for all test files) to R3 in register file
-void load_memory(char *file_name, int N) {
-  
-  //instruction memory:
-  processor.programcode = fopen(file_name, "r+");
-  if(processor.programcode == NULL) {
-    printf("Error opening input file!\n");
-    exit(1);
-  }
-  
-  //storing value of N:
-  processor.reg[3] = N;
-}
-
-
-void reset(){
-    processor.ALUres = 0;
-    processor.MemAdr = 0;
-    processor.LoadType = 0;
-    processor.StoreType = 0;
-    processor.TakeBranch = 0;
-    processor.MemRead = 0;
-    processor.MemWrite = 0;
-    processor.RegWrite = 0;
-    processor.op_code = 0;
-    processor.rd = 0;
-    processor.f3 = 0;
-    processor.rs1 = 0;
-    processor.rs2 = 0;
-    processor.f7 = 0;
-    processor.immI = 0;
-    processor.immS = 0;
-    processor.immB = 0;
-    processor.immU = 0;
-    processor.immJ = 0;
-    processor.op1 = 0;
-    processor.op2 = 0;
-    processor.LoadData=0;
-    processor.MemAdr = 0;
+void RISCV::reset(){
+    ALUres = 0;
+    MemAdr = 0;
+    LoadType = 0;
+    StoreType = 0;
+    TakeBranch = 0;
+    MemRead = 0;
+    MemWrite = 0;
+    RegWrite = 0;
+    op_code = 0;
+    rd = 0;
+    f3 = 0;
+    rs1 = 0;
+    rs2 = 0;
+    f7 = 0;
+    immI = 0;
+    immS = 0;
+    immB = 0;
+    immU = 0;
+    immJ = 0;
+    op1 = 0;
+    op2 = 0;
+    LoadData=0;
+    MemAdr = 0;
 }
 
 //Function to convert a string hexadecimal to respective integer decimal.
@@ -86,78 +56,75 @@ uint32_t stringtohex(char input[11])
 }
 
 //Function to store all map memory values into the .mc program file.
-void store_memory()
+void RISCV::store_memory()
 {
-    std::map<uint32_t, uint8_t>::iterator it = processor.memory.begin();
-    fseek(processor.programcode, 0, SEEK_END);
-    fprintf(processor.programcode, "\n");
-    while (it != processor.memory.end())
+    std::map<uint32_t, uint8_t>::iterator it = memory.begin();
+    FILE* out = fopen("Data Memory.mc", "w");
+    fseek(out, 0, SEEK_SET);
+    fprintf(out, "\n");
+    while (it != memory.end())
     {
-        fprintf(processor.programcode, "0x%0x 0x%0x\n",it->first, it->second);
+        fprintf(out, "0x%0x 0x%0x\n",it->first, it->second);
         ++it;
     }
 }
 
-void instruction_exit()
+void RISCV::instruction_exit()
 {
   //Terminate Program and feed all memory into the .mc file
-        store_memory();
-        fclose(processor.programcode);
-        printf("Clock Cycle %d finished.\n",processor.clock_cycle);
-        std::cout<<"--------------------------------------------------\n\n";
-        std::cout<<"Feeding all memory to .mc file.\nProgram took  "<<processor.clock_cycle<<" clockcycles.\n";
-        std::cout<<"ENDING SIMULATOR.\n";
-        exit(0);
+    store_memory();
+    fclose(programcode);
+    printf("Clock Cycle %d finished.\n",clock_cycle);
+    std::cout<<"--------------------------------------------------\n\n";
+    std::cout<<"Feeding all memory to Data Memory.mc file.\nProgram took  "<<clock_cycle<<" clockcycles.\n";
+    std::cout<<"ENDING SIMULATOR.\n";
+    exit(0); //program run to completion
 }    
 
 //------------------------------------------FETCH()------------------------------------------
 void RISCV::fetch()
-{   
+{       
     // what does processor do if pc location is invalid?: sends to end of program [program terminated.]
     char currentpc[11];
     uint32_t currentpc_number;
     char currentinstruction[11];
-    fscanf(programcode,"%s %s",currentpc, currentinstruction);
-    currentpc_number=stringtohex(currentpc);
-    if (currentpc_number==pc)
-    {
-        //instruction = currentinstruction
-    }
-    else if (currentpc_number>pc)
-    {
-        if (pc%4==0) //PC address should be valid [aligned addressing]
-        {
-            if (fseek(programcode, 0, SEEK_SET)!= 0) 
-            {
-                std::cout<<"Repositioning error. Check File Handling!\n"; 
-            }
-            while (currentpc_number!=pc)
-            {   
-                fscanf(programcode,"%s %s",currentpc, currentinstruction);
+    
+    bool flag;
+    if (pc%4 != 0) {
+        strcpy(currentinstruction, "0xffffffff");
+    } else {
+        fseek(programcode, 0, SEEK_SET);
+        flag = true;
+        while (flag) {
+            if (fscanf(programcode, "%s %s", currentpc, currentinstruction) != EOF) {;
                 currentpc_number = stringtohex(currentpc);
+                if (currentpc_number == pc) {
+                    flag = false;
+                }
+            } else {
+                break;
             }
         }
-        else strcpy(currentinstruction, "0xffffffff");
     }
-    else 
-    {   
-        while ((currentpc_number!=pc)&&(strcmp(currentinstruction,"0xffffffff")))
-        {   
-            fscanf(programcode,"%s %s",currentpc, currentinstruction);
-            currentpc_number+=4;
+
+    //Uploading instruction 
+    if (flag) {
+        for (int i=0; i<32; i++) {
+            instruction[i] = 0;
         }
-    }
-    //upload currentinstruction to instruction[32]
-    uint32_t bits=stringtohex(currentinstruction);
-    for (int i=0; i<32; i++)
-    {
-        if (((1<<i)&bits)!=0)
-        {
-            instruction[i]=1;
+        DepFlag = 0;
+    } else {
+        uint32_t bits=stringtohex(currentinstruction);
+        for (int i=0; i<32; i++) {
+            if (((1<<i)&bits)!=0) {
+                instruction[i] = 1;
+            } else {
+                instruction[i]=0;
+            }
         }
-        else instruction[i]=0;
+        std::cout<<"FETCH: Fetch instruction "<<currentinstruction<<" from address "<<currentpc<<'\n';
     }
-    std::cout<<"FETCH: Fetch instruction "<<currentinstruction<<" from address "<<currentpc<<'\n';
+    
     reset(); //to reset all control lines
 }
 
@@ -165,36 +132,43 @@ void RISCV::fetch()
 void RISCV::decode(){
 
     //Decoding opcode
+    op_code = 0;
     for(int i=0; i<7; i++){
         op_code += instruction[i]*(1<<i);
     }
 
     //Decoding rd
+    rd = 0;
     for(int i=7; i<12; i++){
         rd += instruction[i]*(1<<(i-7));
     }
 
     //Decoding f3
+    f3 = 0;
     for(int i=12; i<15; i++){
         f3 += instruction[i]*(1<<(i-12));
     }
 
     //Decoding rs1
+    rs1 = 0;
     for(int i=15; i<20; i++){
         rs1 += instruction[i]*(1<<(i-15));
     }
 
     //Decoding rs2
+    rs2 = 0;
     for(int i=20; i<25; i++){
         rs2 += instruction[i]*(1<<(i-20));
     }
 
     //Decoding f7
+    f7 = 0;
     for(int i=25; i<32; i++){
         f7 += instruction[i]*(1<<(i-25));
     }
 
     //Decoding ImmI
+    immI = 0;
     for(int i=20; i<32; i++){
         immI += instruction[i]*(1<<(i-20));
     }
@@ -204,6 +178,7 @@ void RISCV::decode(){
     }
 
     //Decoding ImmS
+    immS = 0;
     for(int i=7; i<12; i++){
         immS += instruction[i]*(1<<(i-7));
     }
@@ -217,6 +192,7 @@ void RISCV::decode(){
     }
 
     //Decoding ImmB
+    immB = 0;
     for(int i=8; i<12; i++){
         immB += instruction[i]*(1<<(i-7));
     }
@@ -234,6 +210,7 @@ void RISCV::decode(){
     }
 
     //Decoding ImmU
+    immU = 0;
     for(int i=12; i<32; i++){
         immU += instruction[i]*(1<<i);
     }
@@ -243,6 +220,7 @@ void RISCV::decode(){
     }
 
     //Decoding ImmJ
+    immJ = 0;
     for(int i=21; i<31; i++){
         immJ += instruction[i]*(1<<(i-20));
     }
@@ -258,19 +236,41 @@ void RISCV::decode(){
     if(instruction[31] == 1){
         immJ = -(2097152 - immJ);
     }
-    std::cout<<"DECODE: Decoded the instruction.\n";
+
+    if (op_code == 127) {
+        if (pipeline) {std::cout<<"DECODE: (Exit instruction)\n";}
+        else {instruction_exit();}
+    
+    } else if (op_code != 0) {
+        std::cout<<"DECODE: Decoded the instruction ";
+        for (int i=0; i<32; i++) {
+            std::cout<< instruction[i];
+        }
+        std::cout<<"\n";
+    
+    } else if ( (op_code == 0) & (processor.DepFlag == 2) ) {
+        std::cout<<"DECODE: Data dependency bubble!\n";
+    
+    } else if ( (op_code == 0) & (processor.DepFlag == 1) ) {
+        std::cout<<"DECODE: Control dependency bubble!\n";
+    }
+    
 }
 
 //------------------------------------------EXECUTE()------------------------------------------
-//PC Values are changed in execute only
+//New PC value is stored in a variable here
 //All the if-else and switch statements make the ALU Control Unit
 //All Control Lines Updated in Execute
 void RISCV::execute(){
+
+    //R type
     if(op_code == 51){
-        op1 = reg[rs1];
-        op2 = reg[rs2];
+        if(!forward){
+            op1 = reg[rs1];
+            op2 = reg[rs2];
+        }
         RegWrite = 1;
-        pc += 4;
+        new_pc = pc + 4;
 
 
         if(f3 == 0){
@@ -307,31 +307,35 @@ void RISCV::execute(){
             ALUres = (op1 < op2)?1:0;
             std::cout << "EXECUTE: Operation is SLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << ", Destination is R" << rd << ".\n";
         }
+
+    // I type
     }else if(op_code == 19){
-        op1 = reg[rs1];
+        if(!forward) {op1 = reg[rs1];}
         op2 = immI;
         RegWrite = 1;
-        pc += 4;
+        new_pc = pc + 4;
 
         if(f3 == 0){
             ALUres = (long) op1 + op2;
-            std::cout << "EXECUTE: Operation is ADDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is ADDI, First Operand is R" << rs1 << ", Second Operand is " << op2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 7){
             ALUres = op1 & op2;
-            std::cout << "EXECUTE: Operation is ANDI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is ANDI, First Operand is R" << rs1 << ", Second Operand is " << op2 << ", Destination is R" << rd << ".\n";
         }else if(f3 == 6){
             ALUres = op1 | op2;
-            std::cout << "EXECUTE: Operation is ORI, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is R" << rd << ".\n";
+            std::cout << "EXECUTE: Operation is ORI, First Operand is R" << rs1 << ", Second Operand is " << op2 << ", Destination is R" << rd << ".\n";
         }
+
+    //LOAD type
     }else if(op_code == 3){
-        op1 = reg[rs1];
+        if(!forward) {op1 = reg[rs1];}
         op2 = immI;
         
         MemAdr = op1 + op2;
         ALUres = 0;
         MemRead = 1;
         RegWrite = 1;
-        pc += 4;
+        new_pc = pc + 4;
 
         switch (f3){
         case 0:
@@ -347,14 +351,16 @@ void RISCV::execute(){
             std::cout << "EXECUTE: Operation is LW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         }
+
+    //STORE type
     }else if(op_code == 35){
-        op1 = reg[rs1];
+        if(!forward) {op1 = reg[rs1];}
         op2 = immS;
 
         MemAdr = op1 + op2;
         ALUres = 0;
         MemWrite = 1;
-        pc += 4;
+        new_pc = pc + 4;
 
         switch (f3){
         case 0:
@@ -370,83 +376,111 @@ void RISCV::execute(){
             std::cout << "EXECUTE: Operation is SW, First Operand is R" << rs1 << ", Second Operand is" << op2 << ", Destination is Mem[" << MemAdr << "].\n";
             break;
         }
-    }else if(op_code == 99){
-        op1 = reg[rs1];
-        op2 = reg[rs2];
 
-        ALUres = (long) op1 - op2;
+    //B type
+    }else if(op_code == 99){
+
+        if(!forward){
+            op1 = reg[rs1];
+            op2 = reg[rs2];
+        }
+
+        ALUres = op1 - op2;
 
         switch (f3){
         case 0:
             std::cout << "EXECUTE: Operation is BEQ, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres == 0){
                 TakeBranch = 1;
-                pc += immB;
+                new_pc = pc + immB;
             }else{
                 TakeBranch = 0;
-                pc += 4;
+                new_pc = pc + 4;
             }
             break;
         case 1:
             std::cout << "EXECUTE: Operation is BNE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres != 0){
                 TakeBranch = 1;
-                pc += immB;
+                new_pc = pc + immB;
             }else{
                 TakeBranch = 0;
-                pc += 4;
+                new_pc = pc + 4;
             }
             break;
         case 4:
             std::cout << "EXECUTE: Operation is BLT, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres < 0){
                 TakeBranch = 1;
-                pc += immB;
+                new_pc = pc + immB;
             }else{
                 TakeBranch = 0;
-                pc += 4;
+                new_pc = pc + 4;
             }
             break;
         case 5:
             std::cout << "EXECUTE: Operation is BGE, First Operand is R" << rs1 << ", Second Operand is R" << rs2 << "\n";
             if(ALUres >= 0){
                 TakeBranch = 1;
-                pc += immB;
+                new_pc = pc + immB;
             }else{
                 TakeBranch = 0;
-                pc += 4;
+                new_pc = pc + 4;
             }
             break;
         }
+
+    //LUI
     }else if(op_code == 55){
         std::cout << "EXECUTE: Operation is LUI, First Operand is " << immU << "\n";
         ALUres = immU;
         RegWrite = 1;
-        pc += 4;
+        new_pc = pc + 4;
+    
+    //AUIPC
     }else if(op_code == 23){
         std::cout << "EXECUTE: Operation is AUIPC, First Operand is " << immU << "\n";
         ALUres = pc + immU;
         RegWrite = 1;
-        pc += 4;
+        new_pc = pc + 4;
+    
+    //JAL
     }else if(op_code == 111){
         std::cout << "EXECUTE: Operation is JAL, First Operand is " << immJ << "\n";
         ALUres = pc + 4;
-        pc += immJ;
+        new_pc = pc + immJ;
         RegWrite = 1;
+    
+    //JALR
     }else if(op_code == 103){
         std::cout << "EXECUTE: Operation is JALR, First Operand is " << immI << "\n";
         op1 = reg[rs1];
         ALUres = pc + 4;
-        pc = op1 + immI;
+        new_pc = op1 + immI;
         RegWrite = 1;
-    }else{
-        instruction_exit();
+    
+    } else if (op_code == 127) {
+        std::cout<< "EXECUTE: (Exit instruction)\n";
+        new_pc = pc + 4;
+    
+    } else if( (op_code == 0) & (processor.DepFlag == 2) ){
+        std::cout << "EXECUTE: Data dependency bubble!\n";
+        new_pc = pc + 4;
+    
+    } else if( (op_code == 0) & (processor.DepFlag == 1) ){
+        std::cout << "EXECUTE: Control dependency bubble!\n";
+        new_pc = pc + 4;
+    
+    } else{
+        new_pc = pc + 4;
     }
+
 }
 
 //------------------------------------------MEM()------------------------------------------
 void RISCV::mem()
 {
+    
     if (MemRead==1)
     {   
         RegWrite = 1;
@@ -555,34 +589,49 @@ void RISCV::mem()
             default: break;   
         }
     }
-    else
+    else if (op_code == 127)
+    {
+        std::cout<<"MEMORY: (Exit instruction)\n";
+    }
+    else if (op_code != 0)
     {
        std::cout<<"MEMORY: No memory operation.\n";
+    }
+    else if ( (op_code == 0) & (processor.DepFlag == 2) )
+    {
+        std::cout<<"MEMORY: Data dependency bubble!\n";
+    }
+    else if ( (op_code == 0) & (processor.DepFlag == 1) )
+    {
+        std::cout<<"MEMORY: Control dependency bubble!\n";
     }
 }
 
 //------------------------------------------WRITE_BACK()------------------------------------------
-void RISCV::write_back()
-{   
-    if (RegWrite == 1)
-    {   
-        if (rd!=0)
-        {
-            if(op_code == 3)
-            {
+void RISCV::write_back() {
+
+    if (RegWrite == 1) {   
+        if (rd!=0) {
+            if(op_code == 3) {
                 reg[rd] = LoadData;
                 std::cout<<"WRITEBACK: Write "<<LoadData<<" to R"<<rd<<"\n";
-            }
-            else
-            {
+            } else {
                 reg[rd] = ALUres;
                 std::cout<<"WRITEBACK: Write "<<ALUres<<" to R"<<rd<<"\n";
             }
         }
         else std::cout<<"WRITEBACK: Write 0 to R0\n";
     }
-    else
+    else if (op_code != 0)
     {
         std::cout<<"WRITEBACK: No register writeback operation.\n";
+    }
+    else if ( (op_code == 0) & (processor.DepFlag == 2) )
+    {
+        std::cout<<"WRITEBACK: Data dependency bubble!\n";
+    }
+    else if ( (op_code == 0) & (processor.DepFlag == 1) )
+    {
+        std::cout<<"WRITEBACK: Control dependency bubble!\n";
     }
 }
