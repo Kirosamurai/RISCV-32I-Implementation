@@ -78,6 +78,22 @@ void RISCV::instruction_exit()
     std::cout<<"--------------------------------------------------\n\n";
     std::cout<<"Feeding all memory to Data Memory.mc file.\nProgram took  "<<clock_cycle<<" clockcycles.\n";
     std::cout<<"ENDING SIMULATOR.\n";
+    
+    //------------------------------------------------------
+    //json file code
+    {
+    jsonStringAdder('{', ' ');
+    jsonStringAdder("program","end");
+    jsonStringAdder(' ', '}');
+    jsonStringAdder(']',',');
+    jsonStringAdder("totalCycles",clock_cycle);
+    jsonStringAdder(',','\n');
+    jsonStringAdder('\n','}');
+    fclose(output);
+    }
+    //json file code ends
+    //------------------------------------------------------
+    
     exit(0); //program run to completion
 }    
 
