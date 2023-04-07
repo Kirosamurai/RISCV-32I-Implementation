@@ -8,6 +8,7 @@
 
 #include "Instruction_Packet.h"
 #include "RISCV.h"
+#include "GUI.h"
 
 class PipelineRegister{
 public:
