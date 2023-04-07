@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <iterator>
-#include "Core.h"
+#include"Core.h"
 
 PipelineRegister IF_DE;
 PipelineRegister DE_EX;
@@ -15,6 +15,7 @@ InstructionPacket DE_EX_IP;
 InstructionPacket EX_MA_IP;
 InstructionPacket MA_WB_IP;
 
+FILE* output;
 
 //Function will set all pre requisites for running the processor
 void Core::loadMemory() {
@@ -32,12 +33,109 @@ void Core::loadMemory() {
     //Enabling/disabling pipelining and forwarding:
     processor.pipeline = pipelining;
     processor.forward = forwarding;
+
+    //------------------------------------------------------
+    //json file code
+    {
+    output = fopen("filedata.json","w");
+    jsonStringAdder('{','\n');
+    jsonStringAdder("initialProgramStatus");
+    jsonStringAdder(':','{');
+        jsonStringAdder("registerFile");
+        jsonStringAdder(':','[');
+            for (int i=0; i<31; i++)
+            {
+            jsonStringAdder(processor.reg[i],',');
+            }
+            jsonStringAdder(processor.reg[31],']');
+        jsonStringAdder('}',',');
+        jsonStringAdder("memoryFile");
+        jsonStringAdder(':','{');
+            jsonStringAdder("data");
+            jsonStringAdder(':','{');
+            jsonStringAdder("0x10000000","0");
+            jsonStringAdder('}',',');
+            jsonStringAdder(' ','\n');
+            jsonStringAdder("text");
+            jsonStringAdder(':','{');
+            jsonStringAdder("0x0","0");
+            jsonStringAdder('}','}');
+            jsonStringAdder(' ','\n');
+        jsonStringAdder(',','\n');
+        jsonStringAdder("pipelineRegFile");
+        jsonStringAdder(':','{');
+            jsonStringAdder("IF-DE");
+            jsonStringAdder(':','{');
+            jsonStringAdder("null","null");
+            jsonStringAdder('}',',');
+
+            jsonStringAdder("DE-MA");
+            jsonStringAdder(':','{');
+            jsonStringAdder("null","null");
+            jsonStringAdder('}',',');
+
+            jsonStringAdder("MA-EX");
+            jsonStringAdder(':','{');
+            jsonStringAdder("null","null");
+            jsonStringAdder('}',',');
+
+            jsonStringAdder("EX-WB");
+            jsonStringAdder(':','{');
+            jsonStringAdder("null","null");
+            jsonStringAdder('}','\n');
+    jsonStringAdder('}',',');
+    jsonStringAdder(' ','\n');
+    jsonStringAdder("pipeline",pipelining);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("forward",forwarding);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("stall",!forwarding);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("cycle");
+    jsonStringAdder(':','[');
+    }
+    //json file code ends
+    //-------------------------------------------------------
 }
 
 //Function starts the actual processor
 void Core::Run() {
     if(!pipelining){
         while(1) {
+            //------------------------------------------------------
+            //json file code
+            {
+            jsonStringAdder('{',' ');
+            jsonStringAdder("number",processor.clock_cycle);
+            jsonStringAdder(',',' ');
+            jsonStringAdder("IFpc", processor.pc);
+            jsonStringAdder(',',' ');
+            jsonStringAdder("IFhexcode",processor.instruction);
+            jsonStringAdder(',',' ');
+            jsonStringAdder("memFile");
+            jsonStringAdder(':','{');
+            std::map<uint32_t, uint8_t>::iterator it = processor.memory.begin();
+            while (it != processor.memory.end())
+            {
+                jsonStringAdder(it->first,it->second);
+                jsonStringAdder(',',' ');
+                ++it;
+            }
+            jsonStringAdder("0xffffffff","0x0");
+            jsonStringAdder('}',' '); 
+            jsonStringAdder(',','\n');  
+            jsonStringAdder("registerFile");
+            jsonStringAdder(':','[');
+            for (int i=0; i<31; i++)
+            {
+                jsonStringAdder(processor.reg[i],',');
+            }
+            jsonStringAdder(processor.reg[31],']');
+            jsonStringAdder('}',' ');  
+            jsonStringAdder(',','\n'); 
+            }   
+            //json file code ends
+            //------------------------------------------------------
             //Run without pipelining:
             processor.clock_cycle++;
             processor.fetch();
@@ -87,7 +185,7 @@ void Core::runCycle() {
         //Meaning bubbles must be inserted.
         
         control_hazards++;
-        control_bubbles += 6;
+        control_bubbles += 6; //niti notes: why 6?
         
         IF_DE.Stall();
         DE_EX.Stall();
@@ -129,6 +227,16 @@ void Core::runCycle() {
         DE_EX.DepFlag_pl = 2;
     }
 
+    //------------------------------------------------------
+    //json file code
+        jsonStringAdder('{',' ');
+        jsonStringAdder("controlDep",processor.ControlDependency);
+        jsonStringAdder(',',' ');
+        jsonStringAdder("dataDep",processor.DataDependency);
+        jsonStringAdder(',',' ');
+    //json file code
+    //------------------------------------------------------
+
     //-----------------------------FORWARDING IMPLEMENTATION----------------------------------
     
     if (forwarding) {
@@ -137,21 +245,40 @@ void Core::runCycle() {
         DE_EX.op1_pl = processor.reg[DE_EX.rs1_pl];
         DE_EX.op2_pl = processor.reg[DE_EX.rs2_pl];
 
+        //json code: flag to give info whether we're forwarding any data
+        bool jsonForwardFlag = false;
+
         switch (processor.DataDependency) {
             
             case 1: //MA-->EX FORWARDING
 
             if(EX_MA.rd_pl == DE_EX.rs1_pl){
                 DE_EX.op1_pl = EX_MA.ALUres_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","MA-EX");
+                jsonStringAdder(',',' ');
             }else if((!(DE_EX.op_code_pl == 19)) & (!(DE_EX.op_code_pl == 3)) & (!(DE_EX.op_code_pl == 35))){
                 DE_EX.op2_pl = EX_MA.ALUres_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","MA-EX");
+                jsonStringAdder(',',' ');
             }
+            //json code: insert forwarding flag.
+            jsonStringAdder("forwarding",jsonForwardFlag);
+            jsonStringAdder(',',' ');  
             break;
             
             case 2:
             
             if (DE_EX.op_code_pl == 35) { //WB-->MA FORWARDING
                 DE_EX.DepFlag_pl = 3;
+
+                //json code: set forwarding flag to true
+                jsonStringAdder("fPath","WB-MA");
+                jsonStringAdder(',',' ');
+                jsonForwardFlag = true;
             }else{ //LOAD-USE HAZARD
                 data_hazards++;
                 data_bubbles += 3;
@@ -159,24 +286,49 @@ void Core::runCycle() {
                 DE_EX.Stall();
                 DE_EX.DepFlag_pl = 2;
             }
+            //json code: insert forwarding flag.
+            jsonStringAdder("forwarding",jsonForwardFlag);
+            jsonStringAdder(',',' '); 
             break;
 
             case 3: //WB-->EX FORWARDING
             
             if(MA_WB.rd_pl == DE_EX.rs1_pl){
                 DE_EX.op1_pl = MA_WB.ALUres_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","WB-EX");
+                jsonStringAdder(',',' ');
             }else if((!(DE_EX.op_code_pl == 19)) & (!(DE_EX.op_code_pl == 3)) & (!(DE_EX.op_code_pl == 35))){
                 DE_EX.op2_pl = MA_WB.ALUres_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","WB-EX");
+                jsonStringAdder(',',' ');
             }
+            //json code: insert forwarding flag.
+            jsonStringAdder("forwarding",jsonForwardFlag);
+            jsonStringAdder(',',' '); 
             break;  
             
             case 4: //WB-->EX FORWARDING (Load Type)
 
             if(MA_WB.rd_pl == DE_EX.rs1_pl){
                 DE_EX.op1_pl = MA_WB.LoadData_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","WB-EX");
+                jsonStringAdder(',',' ');
             }else if((!(DE_EX.op_code_pl == 19)) & (!(DE_EX.op_code_pl == 3)) & (!(DE_EX.op_code_pl == 35))){
                 DE_EX.op2_pl = MA_WB.LoadData_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","WB-EX");
+                jsonStringAdder(',',' ');
             }
+            //json code: insert forwarding flag.
+            jsonStringAdder("forwarding",jsonForwardFlag);
+            jsonStringAdder(',',' '); 
             break;
         }
 
@@ -189,11 +341,20 @@ void Core::runCycle() {
     
     //------------------------IMPLEMENTING PREDICTED BRANCH------------------------
     
+    //json code: branch predictor flag
+    bool jsonBranch = false;
     if(btb.find(IF_DE.current_pc_pl) != btb.end()){
         if(btb[IF_DE.current_pc_pl].first == 1){
             processor.new_pc = btb[IF_DE.current_pc_pl].second;
         }
+        //json code: branch predictor used or not?
+        jsonBranch = true;
+        jsonStringAdder("bPSuccess",btb[IF_DE.current_pc_pl].first);
+        jsonStringAdder(',',' ');
     }
+    //json code: insert branch predict data.
+    jsonStringAdder("branchPredict",jsonBranch);
+    jsonStringAdder(',',' ');
 
     //------------------------UPDATING PC VALUE------------------------
     
@@ -202,7 +363,7 @@ void Core::runCycle() {
             processor.pc = processor.new_pc;
         }
     } else {
-        if ( (processor.DataDependency != 2) |(DE_EX.DepFlag_pl == 3) | processor.ControlDependency) {
+        if ( (processor.DataDependency != 2) | (DE_EX.DepFlag_pl == 3) | processor.ControlDependency) {
             processor.pc = processor.new_pc;
         }
     }
@@ -211,6 +372,56 @@ void Core::runCycle() {
     
     //------------------------START PIPELINE------------------------
     
+    //------------------------------------------------------
+    //json file code
+    {
+    jsonStringAdder("number",processor.clock_cycle);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("IFpc", processor.pc);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("IFhexcode",processor.instruction);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("DEpc", IF_DE.current_pc_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("DEhexcode",IF_DE.instruction_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("EXpc", DE_EX.current_pc_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("EXhexcode",DE_EX.instruction_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("MApc", EX_MA.current_pc_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("MAhexcode",EX_MA.instruction_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("WBpc", MA_WB.current_pc_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("WBhexcode",MA_WB.instruction_pl);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("memFile");
+    jsonStringAdder(':','{');
+    std::map<uint32_t, uint8_t>::iterator it = processor.memory.begin();
+    while (it != processor.memory.end())
+    {
+        jsonStringAdder(it->first,it->second);
+        jsonStringAdder(',',' ');
+        ++it;
+    }
+    jsonStringAdder("0xffffffff","0x0");
+    jsonStringAdder('}',' '); 
+    jsonStringAdder(',','\n');  
+    jsonStringAdder("registerFile");
+    jsonStringAdder(':','[');
+    for (int i=0; i<31; i++)
+    {
+        jsonStringAdder(processor.reg[i],',');
+    }
+    jsonStringAdder(processor.reg[31],']');
+    jsonStringAdder('}',' ');  
+    jsonStringAdder(',','\n'); 
+    }
+    //json file code ends
+    //------------------------------------------------------
+
     processor.fetch();
     WriteToPacket(IF_DE_IP);
     
@@ -262,10 +473,13 @@ void Core::runCycle() {
             std::cout<<"MA-WB:"; MA_WB.Trace();
         } else {
             if (trace_instruction == instructions) {
-                IF_DE.Trace();
-                DE_EX.Trace();
-                EX_MA.Trace();
-                MA_WB.Trace();
+                std::cout<<"--------------------------------------------------\n";
+                std::cout<<"Tracing for clock cycle "<<processor.clock_cycle<<" (Instruction Number "<<instructions<<") :\n\n";
+                std::cout<<"       PC OPCODE RD F3 RS1 RS2 F7 IMMI IMMS IMMB IMMU IMMJ LOADTYPE STORETYPE TAKEBRANCH MEMREAD MEMWRITE REGWRITE ALURES MEMADR LOADDATA\n";
+                std::cout<<"IF-DE:"; IF_DE.Trace();
+                std::cout<<"DE-EX:"; DE_EX.Trace();
+                std::cout<<"EX-MA:"; EX_MA.Trace();
+                std::cout<<"MA-WB:"; MA_WB.Trace();
             }
         }
     }
@@ -300,6 +514,43 @@ void Core::Stop() {
     CPI = (float) processor.clock_cycle / (float) instructions;
     std::cout<<"\nSTATS:\n";
     showStats();
+    
+    //------------------------------------------------------
+    //json file code
+    {
+    jsonStringAdder('{', ' ');
+    jsonStringAdder("program","end");
+    jsonStringAdder(' ', '}');
+    jsonStringAdder(']',',');
+    jsonStringAdder("totalCycles",processor.clock_cycle);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("totalInstructions",instructions);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("cpi",std::to_string(CPI));
+    jsonStringAdder(',','\n');
+    jsonStringAdder("dataInstructions",data_instructions);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("aluInstructions",ALU_instructions);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("controlIns",control_instructions);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("bubbles",bubbles);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("dataHazards",data_hazards);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("controlHazards",control_hazards);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("branchMispredicts",wrong_predicts);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("dataBubbles",data_bubbles);
+    jsonStringAdder(',','\n');
+    jsonStringAdder("controlBubbles",control_bubbles);
+    jsonStringAdder('\n','}');
+    fclose(output);
+    }
+    //json file code ends
+    //------------------------------------------------------
+    
     exit(0); //program run til completion
 }
 
