@@ -107,14 +107,13 @@ public:
         MemAdr = 0;
         LoadData = 0;
         ALUres = 0;
-
-        DepFlag = 0;
     }
     
     //For pipelining:
     int DataDependency;
     int ControlDependency;
     int DepFlag;
+
     bool pipeline;
     bool forward;
 

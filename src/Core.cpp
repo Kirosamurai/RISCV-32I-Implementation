@@ -254,6 +254,12 @@ void Core::runCycle() {
                 jsonForwardFlag = true;
                 jsonStringAdder("fPath","MA-EX");
                 jsonStringAdder(',',' ');
+            }else if(DE_EX.op_code_pl == 35){
+                processor.reg[EX_MA.rs2_pl] = EX_MA.ALUres_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","WB-EX");
+                jsonStringAdder(',',' ');
             }else if((!(DE_EX.op_code_pl == 19)) & (!(DE_EX.op_code_pl == 3)) & (!(DE_EX.op_code_pl == 35))){
                 DE_EX.op2_pl = EX_MA.ALUres_pl;
                 //json code: set forwarding flag to true.

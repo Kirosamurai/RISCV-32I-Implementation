@@ -97,7 +97,6 @@ public:
     //For tracing values in Pipeline Registers:
     void Trace();
 
-    
 };
 
 //For checking Dependencies between two different Pipeline Registers:
@@ -105,7 +104,7 @@ int isDataDependency();
 int isControlDependency();
 
 //For implementing branch prediction:
-extern std::map<uint32_t, std::pair<bool, uint32_t>> btb;
+extern std::map<uint32_t, std::pair<bool, uint32_t> > btb;
 int checkPredict();
 extern int predict_type;
 
