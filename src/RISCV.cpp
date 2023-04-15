@@ -7,6 +7,7 @@
 
 #include "RISCV.h"
 
+
 void RISCV::reset(){
     ALUres = 0;
     MemAdr = 0;
@@ -59,7 +60,7 @@ uint32_t stringtohex(char input[11])
 void RISCV::store_memory()
 {
     std::map<uint32_t, uint8_t>::iterator it = memory.begin();
-    FILE* out = fopen("Data Memory.mc", "w");
+    FILE* out = fopen("../bin/Data Memory.mc", "w");
     fseek(out, 0, SEEK_SET);
     fprintf(out, "\n");
     while (it != memory.end())
@@ -67,6 +68,7 @@ void RISCV::store_memory()
         fprintf(out, "0x%0x 0x%0x\n",it->first, it->second);
         ++it;
     }
+    fclose(out);
 }
 
 void RISCV::instruction_exit()
@@ -78,29 +80,33 @@ void RISCV::instruction_exit()
     std::cout<<"--------------------------------------------------\n\n";
     std::cout<<"Feeding all memory to Data Memory.mc file.\nProgram took  "<<clock_cycle<<" clockcycles.\n";
     std::cout<<"ENDING SIMULATOR.\n";
-    
+
     //------------------------------------------------------
     //json file code
     {
     jsonStringAdder('{', ' ');
-    jsonStringAdder("program","end");
+    jsonStringAdder("number",clock_cycle);
+    jsonStringAdder(',',' ');
+    jsonStringAdder("IFpc","EOF");
+    jsonStringAdder(',',' ');
+    jsonStringAdder("IFhexcode","EOF");
     jsonStringAdder(' ', '}');
     jsonStringAdder(']',',');
     jsonStringAdder("totalCycles",clock_cycle);
-    jsonStringAdder(',','\n');
     jsonStringAdder('\n','}');
     fclose(output);
     }
     //json file code ends
     //------------------------------------------------------
-    
     exit(0); //program run to completion
 }    
+
 
 //------------------------------------------FETCH()------------------------------------------
 void RISCV::fetch()
 {       
     // what does processor do if pc location is invalid?: sends to end of program [program terminated.]
+    // bool flag = false;
     char currentpc[11];
     uint32_t currentpc_number;
     char currentinstruction[11];
@@ -270,13 +276,13 @@ void RISCV::decode(){
     } else if ( (op_code == 0) & (processor.DepFlag == 1) ) {
         std::cout<<"DECODE: Control dependency bubble!\n";
     }
-    
 }
 
 //------------------------------------------EXECUTE()------------------------------------------
 //New PC value is stored in a variable here
 //All the if-else and switch statements make the ALU Control Unit
 //All Control Lines Updated in Execute
+
 void RISCV::execute(){
 
     //R type
@@ -624,7 +630,7 @@ void RISCV::mem()
 }
 
 //------------------------------------------WRITE_BACK()------------------------------------------
-void RISCV::write_back() {
+void RISCV::write_back() {   
 
     if (RegWrite == 1) {   
         if (rd!=0) {
@@ -650,4 +656,5 @@ void RISCV::write_back() {
     {
         std::cout<<"WRITEBACK: Control dependency bubble!\n";
     }
+    
 }

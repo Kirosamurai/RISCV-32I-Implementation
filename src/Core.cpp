@@ -37,7 +37,7 @@ void Core::loadMemory() {
     //------------------------------------------------------
     //json file code
     {
-    output = fopen("filedata.json","w");
+    output = fopen("../gui/src/components/filedata.json","w");
     jsonStringAdder('{','\n');
     jsonStringAdder("initialProgramStatus");
     jsonStringAdder(':','{');
@@ -69,17 +69,17 @@ void Core::loadMemory() {
             jsonStringAdder("null","null");
             jsonStringAdder('}',',');
 
-            jsonStringAdder("DE-MA");
+            jsonStringAdder("DE-EX");
             jsonStringAdder(':','{');
             jsonStringAdder("null","null");
             jsonStringAdder('}',',');
 
-            jsonStringAdder("MA-EX");
+            jsonStringAdder("EX-MA");
             jsonStringAdder(':','{');
             jsonStringAdder("null","null");
             jsonStringAdder('}',',');
 
-            jsonStringAdder("EX-WB");
+            jsonStringAdder("MA-WB");
             jsonStringAdder(':','{');
             jsonStringAdder("null","null");
             jsonStringAdder('}','\n');
@@ -139,13 +139,9 @@ void Core::Run() {
             //Run without pipelining:
             processor.clock_cycle++;
             processor.fetch();
-            processor.clock_cycle++;
             processor.decode();
-            processor.clock_cycle++;
             processor.execute();
-            processor.clock_cycle++;
             processor.mem();
-            processor.clock_cycle++;
             processor.write_back();
             processor.pc = processor.new_pc;
             printf("Clock Cycle %d finished.\n",processor.clock_cycle);
@@ -295,6 +291,12 @@ void Core::runCycle() {
             
             if(MA_WB.rd_pl == DE_EX.rs1_pl){
                 DE_EX.op1_pl = MA_WB.ALUres_pl;
+                //json code: set forwarding flag to true.
+                jsonForwardFlag = true;
+                jsonStringAdder("fPath","WB-EX");
+                jsonStringAdder(',',' ');
+            }else if(DE_EX.op_code_pl == 35){
+                processor.reg[DE_EX.rs2_pl] = MA_WB_IP.LoadData_ip;
                 //json code: set forwarding flag to true.
                 jsonForwardFlag = true;
                 jsonStringAdder("fPath","WB-EX");
@@ -524,7 +526,7 @@ void Core::Stop() {
     jsonStringAdder(']',',');
     jsonStringAdder("totalCycles",processor.clock_cycle);
     jsonStringAdder(',','\n');
-    jsonStringAdder("totalInstructions",instructions);
+    jsonStringAdder("tInstructions",instructions);
     jsonStringAdder(',','\n');
     jsonStringAdder("cpi",std::to_string(CPI));
     jsonStringAdder(',','\n');
