@@ -110,4 +110,5 @@ All data memory is stored in file ../bin/Data Memory.mc
 
 Run the following commands to view GUI:
 $cd ../gui
+$npm i react-scripts
 $npm start
