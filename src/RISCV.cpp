@@ -6,7 +6,8 @@
 #include <string>
 
 #include "RISCV.h"
-
+#include "Pipeline.h"
+#include "Cache.h"
 
 void RISCV::reset(){
     ALUres = 0;
@@ -105,6 +106,18 @@ void RISCV::instruction_exit()
 //------------------------------------------FETCH()------------------------------------------
 void RISCV::fetch()
 {       
+    if (cache) {
+        bool hit = I$.isPresent(pc);
+        if (hit) {
+            I$.recencyUpdater(I$.index, I$.thisWay);
+            //read also
+        } else {
+            I$.allocate(pc);
+        }
+    }
+    
+    else {
+
     // what does processor do if pc location is invalid?: sends to end of program [program terminated.]
     // bool flag = false;
     char currentpc[11];
@@ -147,6 +160,8 @@ void RISCV::fetch()
         std::cout<<"FETCH: Fetch instruction "<<currentinstruction<<" from address "<<currentpc<<'\n';
     }
     
+    }
+
     reset(); //to reset all control lines
 }
 
@@ -507,100 +522,154 @@ void RISCV::mem()
     {   
         RegWrite = 1;
         LoadData = 0;
-        switch (LoadType)
-        {   
+        switch (LoadType) {   
+            
             //rd = M[rs1+imm][0:7] LB
-            case 1: 
-                {   
-                    if (memory.find(MemAdr)==memory.end())
-                    {
-                        LoadData=0;
-                        memory[MemAdr]=0;
-                    }
-                    else
-                    {
-                        LoadData = memory[MemAdr];
-                        if ((LoadData&(1<<7))!=0)
-                        {
-                            LoadData+=0xFFFFFF00;
-                        }
-                    }
-                    std::cout<<"MEMORY: Load 1 Byte of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
-                    break;
+            case 1:    
+            
+            if (cache) {
+                bool hit = D$.isPresent(MemAdr);
+                if (hit) {
+                    D$.recencyUpdater(D$.index, D$.thisWay);
+                } else {
+                    D$.allocate(MemAdr);
                 }
+                LoadData = D$.read();
+            
+            } else {
+                if (memory.find(MemAdr)==memory.end()) {
+                    LoadData=0;
+                    memory[MemAdr]=0;
+                } else {
+                    LoadData = memory[MemAdr];
+                    if ((LoadData&(1<<7))!=0) {LoadData+=0xFFFFFF00;}
+                }
+            }
+            
+            std::cout<<"MEMORY: Load 1 Byte of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
+            break;
+                
             //rd = M[rs1+imm][0:15] LH
             case 2:
-                {
-                    if (memory.find(MemAdr)==memory.end())
-                    {
-                        LoadData+=0;
-                        memory[MemAdr]=0;
-                    }
-                    else
-                    {   
-                        LoadData = memory[MemAdr];
-                    }
-                    if (memory.find(MemAdr+1)==memory.end())
-                    {
-                        memory[MemAdr+1]=0;
-                    }
-                    else
-                    {
-                        LoadData = LoadData + (memory[MemAdr+1]<<8);
-                        if ((LoadData&(1<<15))!=0)
-                        {
-                            LoadData+=0xFFFF0000;
-                        }
-                    }
-                    std::cout<<"MEMORY: Load 2 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
-                    break;
+            
+            if (cache) {
+                bool hit = D$.isPresent(MemAdr);
+                if (hit) {
+                    D$.recencyUpdater(D$.index, D$.thisWay);
+                } else {
+                    D$.allocate(MemAdr);
                 }
+                LoadData = D$.read();
+            
+            } else {
+                if (memory.find(MemAdr)==memory.end()) {
+                    LoadData+=0;
+                    memory[MemAdr]=0;
+                } else {   
+                    LoadData = memory[MemAdr];
+                }
+                if (memory.find(MemAdr+1)==memory.end()) {
+                    memory[MemAdr+1]=0;
+                } else {
+                    LoadData = LoadData + (memory[MemAdr+1]<<8);
+                    if ((LoadData&(1<<15))!=0) {LoadData+=0xFFFF0000;}
+                }
+            }
+            
+            std::cout<<"MEMORY: Load 2 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
+            break;
+
             //rd = M[rs1+imm][0:31] LW
-            case 3: 
-               {    
-                    int loop;
-                    for (loop=0; loop<4; loop++)
-                    {   
-                        if ((memory.find(MemAdr+loop))==(memory.end()))
-                        {   
-                            memory[MemAdr+loop]=0;
-                        }
-                        else
-                        {   
-                            LoadData += (memory[MemAdr+loop]<<(8*loop));
-                        }
-                    }
-                    //if ((memory[MemAdr+loop]&(1<<7))!=0)
-                    if (LoadData>2147483647)
-                    {
-                        //Data to be loaded is negative.
-                        LoadData = -(4294967294 - LoadData);
-                    }
-                   std::cout<<"MEMORY: Load 4 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
-                   break; 
+            case 3:   
+            
+            if (cache) {
+                bool hit = D$.isPresent(MemAdr);
+                if (hit) {
+                    D$.recencyUpdater(D$.index, D$.thisWay);
+                } else {
+                    D$.allocate(MemAdr);
                 }
+                LoadData = D$.read();
+            
+            } else {
+                int loop;
+                for (loop=0; loop<4; loop++) {   
+                    if ((memory.find(MemAdr+loop))==(memory.end())) {   
+                        memory[MemAdr+loop]=0;
+                    } else {   
+                        LoadData += (memory[MemAdr+loop]<<(8*loop));
+                    }
+                }
+                //if ((memory[MemAdr+loop]&(1<<7))!=0)
+                if (LoadData>2147483647) {
+                    //Data to be loaded is negative.
+                    LoadData = -(4294967294 - LoadData);
+                }
+            }
+
+            std::cout<<"MEMORY: Load 4 Bytes of Memory Value "<<LoadData<<" from address "<<MemAdr<<'\n';
+            break; 
+            
             default: break;   
         }
-    }
-    else if (MemWrite==1)
-    {
-        switch (StoreType)
-        {
+    
+    
+    } else if (MemWrite==1) {
+    
+        switch (StoreType) {
+            
             case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
-            {
+            if (cache) {
+                bool hit = D$.isPresent(MemAdr);
+                if (hit) {
+                    D$.recencyUpdater(D$.index, D$.thisWay);
+                } else {
+                    D$.allocate(MemAdr);
+                    MA_WB.DepFlag_pl = 3;
+                }
+                D$.write(reg[rs2]);
+            } else {
                 memory[MemAdr]=reg[rs2];
                 std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
                 break;
             }
+            
             case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
-            {
+            if (cache) {
+                bool hit = D$.isPresent(MemAdr);
+                if (hit) {
+                    D$.recencyUpdater(D$.index, D$.thisWay);
+                } else {
+                    D$.allocate(MemAdr);
+                    MA_WB.DepFlag_pl = 3;
+                }
+                D$.write(reg[rs2]);
+                D$.offset_num += 8;
+                D$.write(reg[rs2]>>8);
+            } else {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
                 std::cout<<"MEMORY: Store 2 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
                 break;
             }
+            
             case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
-            {
+            if (cache) {
+                bool hit = D$.isPresent(MemAdr);
+                if (hit) {
+                    D$.recencyUpdater(D$.index, D$.thisWay);
+                } else {
+                    D$.allocate(MemAdr);
+                    MA_WB.DepFlag_pl = 3;
+                }
+                D$.write(reg[rs2]);
+                D$.offset_num += 8;
+                D$.write(reg[rs2]>>8);
+                D$.offset_num += 8;
+                D$.write(reg[rs2]>>16);
+                D$.offset_num += 8;
+                D$.write(reg[rs2]>>24);
+            } else {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
                 memory[MemAdr+2]=(reg[rs2]>>16);
@@ -608,6 +677,7 @@ void RISCV::mem()
                 std::cout<<"MEMORY: Store 4 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
                 break;
             }
+            
             default: break;   
         }
     }

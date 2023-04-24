@@ -72,7 +72,12 @@ int Cache::recencyTranslateVal(int index, int way) {
   return answer;
 }
 
-void Cache::recencyUpdater(int index, int way) {
+void Cache::recencyUpdater(std::string index_str, int way) {
+  int index;
+  for (int i=index_bits-1; i>=0; i--) {
+    index += index_str[i] * pow(2,index_bits-i-1);
+  }
+
   std::string max_val_string;
   std::string min_val_string;
   for (int i = 0; i < recency_bits; i++) {
@@ -249,7 +254,7 @@ void Cache::allocate(uint32_t mem_address) {
           mainMemoryLoader(whichCache, mem_address);
       tag_array[index_num][thisWay] = tag;
       // update recency bits
-      recencyUpdater(index_num, thisWay);
+      recencyUpdater(index, thisWay);
     }
   
   } else // n-way set mapped
@@ -325,7 +330,7 @@ void Cache::allocate(uint32_t mem_address) {
           mainMemoryLoader(whichCache, mem_address);
       tag_array[index_num][thisWay] = tag;
       // update recency bits
-      recencyUpdater(index_num, thisWay);
+      recencyUpdater(index, thisWay);
     }
   }
 }
@@ -339,7 +344,7 @@ uint8_t Cache::read() {
     for (int i=index_bits-1; i>=0; i--) {
         index_num += index[i] * pow(2,index_bits-i-1);
     }
-    int offset_num;
+
     for (int i=offset_bits-1; i>=0; i--) {
         offset_num += offset[i] * pow(2,offset_bits-i-1);
     }
@@ -359,7 +364,7 @@ void Cache::write(uint8_t data_val) {
     for (int i=index_bits-1; i>=0; i--) {
         index_num += index[i] * pow(2,index_bits-i-1);
     }
-    int offset_num;
+
     for (int i=offset_bits-1; i>=0; i--) {
         offset_num += offset[i] * pow(2,offset_bits-i-1);
     }

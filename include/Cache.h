@@ -76,6 +76,8 @@ public:
     std::string tag;
     std::string index;
     std::string offset;
+
+    int offset_num = 0;
     
     //returns TRUE for hit, FALSE for miss
     bool isPresent(uint32_t address);
@@ -96,7 +98,7 @@ public:
     void allocate(uint32_t mem_address);
 
     //IF HIT: update recency, then read or write
-    void recencyUpdater(int index, int way);
+    void recencyUpdater(std::string index, int way);
     void write(uint8_t data);
     uint8_t read();
 

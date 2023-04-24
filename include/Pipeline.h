@@ -134,6 +134,11 @@ public:
 
     //For checking dependencies and inserting bubbles:
     int DepFlag_pl;
+    /*
+    DepFlag = 1 : control dependency bubble
+    DepFlag = 2 : data dependency bubble
+    DepFlag = 3 : memory stall
+    */
     int isConflict();
     void Stall();
 
