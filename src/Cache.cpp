@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include "Cache.h"
+#include <bits/stdc++.h>
 
 bool Cache::isPresent(uint32_t add) {
     
@@ -148,6 +149,8 @@ void Cache::allocate(uint32_t mem_address) {
   for (int i = index_bits - 1; i >= 0; i--) {
     index_num += index[i] * pow(2, index_bits - i - 1);
   }
+
+  
 
   if (associativity == 1) // direct mapped
   {
@@ -378,5 +381,25 @@ void Cache::write(uint8_t data_val) {
     for (int i=8*offset_num; i<8*(offset_num+1); i++) {
         data_array[index_num][3][thisWay][i] = data_val_bits[i-8*offset_bits];
     }
+}
+
+int Cache::miss_type(uint32_t mem_address){
+
+  int index_num;
+  for (int i=index_bits-1; i>=0; i--) {
+      index_num += index[i] * pow(2,index_bits-i-1);
+  }
+
+  if(std::find(mct.begin(),mct.end(), mem_address) == mct.end()){
+    mct.push_back(mem_address);
+    return 1; //COLD MISS
+  }else{
+    for(int i=0; i<associativity; i++){
+      if(data_array[index_num][0][i] == "0"){
+        return 2; //CONFLICT MISS
+      }
+    }
+    return 3; //CAPACITY MISS
+  }
 }
 

@@ -525,6 +525,7 @@ void Core::Stop() {
     std::cout<<"--------------------------------------------------\n";
     bubbles = data_bubbles + control_bubbles;
     CPI = (float) processor.clock_cycle / (float) instructions;
+    CPI_ideal_cache = (float) (processor.clock_cycle - D$.memory_stalls - I$.memory_stalls)/ (float) instructions;
     std::cout<<"\nSTATS:\n";
     showStats();
     
@@ -581,4 +582,21 @@ void Core::showStats() {
     std::cout<<"10--> Number of branch mispredictions          : "<<wrong_predicts<<"\n";
     std::cout<<"11--> Number of bubbles due to data hazards    : "<<data_bubbles<<"\n";
     std::cout<<"12--> Number of bubbles due to control hazards : "<<control_bubbles<<"\n";
+
+    if(caching){
+        std::cout<<" 13--> Ideal Cache CPI                         : "<<CPI_ideal_cache<<"\n";
+        std::cout<<" 14--> CPI with Cache                          : "<<CPI<<"\n";
+        std::cout<<" 15--> Number of hits in Data Cache            : "<<D$.hits<<"\n";
+        std::cout<<" 16--> Number of hits in Instruction Cache     : "<<I$.hits<<"\n";
+        std::cout<<" 17--> Number of misses in Data Cache          : "<<(D$.memory_stalls/D$.penalty)<<"\n";
+        std::cout<<" 18--> Number of misses in Instruction Cache   : "<<(I$.memory_stalls/I$.penalty)<<"\n";
+        std::cout<<" 19--> Number of cold miss in Data Cache       : "<< D$.cold_miss <<"\n";
+        std::cout<<" 20--> Number of cold miss in Instruction Cache: "<< I$.cold_miss <<"\n";
+        std::cout<<" 21--> Number of conflict miss in Data Cache   : "<< D$.conflict_miss <<"\n";
+        std::cout<<" 22--> Number of conflict miss in I$ Cache     : "<< I$.conflict_miss <<"\n";
+        std::cout<<" 23--> Number of capacity miss in Data Cache   : "<< D$.capacity_miss <<"\n";
+        std::cout<<" 24--> Number of capacity miss in Data Cache   : "<< I$.capacity_miss <<"\n";
+        std::cout<<" 25--> Number of accesses in Data Cache        : "<< (D$.memory_stalls/D$.penalty) + D$.hits <<"\n";
+        std::cout<<" 26--> Number of accesses in Instruction Cache : "<< (I$.memory_stalls/I$.penalty) + I$.hits <<"\n";
+    }
 }

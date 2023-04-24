@@ -145,8 +145,9 @@ int main(int argc, char* argv[]) {
     scanf("%d", CPU.d_sizeBlock);
     printf("Data Cache Mapping (1 for DM, 2 for SA, 3 for FA): ");
     scanf("%d", CPU.d_mapping);
+
     if (CPU.d_mapping == 2) {
-      printf("Instruction cache no. of ways: ");
+      printf("Data cache no. of ways: ");
       scanf("%d", CPU.d_ways);
       Cache D$(CPU.d_sizeCache, CPU.d_sizeCache, CPU.d_ways);
       D$.whichCache = 2;
@@ -162,6 +163,11 @@ int main(int argc, char* argv[]) {
       scanf("%d", CPU.d_replacement);
       D$.replace = CPU.d_replacement;
     }
+
+    printf("Instruction Cache Miss Penalty: ");
+    scanf("%d", I$.penalty);
+    printf("Data Cache Miss Penalty: ");
+    scanf("%d", D$.penalty);
 
   }
 

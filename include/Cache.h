@@ -22,6 +22,8 @@ public:
     int set_num;
     int associativity;
 
+    vector<uint32_t> mct;
+
     /*
     TAG ARRAY IS OF THE FORM:
     tag_array[index][way number] = tag
@@ -105,7 +107,19 @@ public:
     void recencyUpdater(std::string index, int way);
     void write(uint8_t data);
     uint8_t read();
+    
+    //Type of miss
+    int miss_type(uint32_t mem_address);
 
+    //Stats!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    int cold_miss = 0;
+    int capacity_miss = 0;
+    int conflict_miss = 0;
+    int hits = 0;
+    int memory_stalls = 0;
+    int number_of_accesses = 0;
+
+    int penalty;
 };
 
 extern Cache I$;
