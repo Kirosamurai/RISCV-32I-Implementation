@@ -48,13 +48,24 @@ uint8_t Cache::read() {
 
 }
 
-void Cache::write() {
+void Cache::write(uint8_t data_val) {
     int index_num;
     for (int i=index_bits-1; i>=0; i--) {
         index_num += index[i] * pow(2,index_bits-i-1);
+    }
+    int offset_num;
+    for (int i=offset_bits-1; i>=0; i--) {
+        offset_num += offset[i] * pow(2,offset_bits-i-1);
     }
 
     data_array[index_num][0][thisWay] = 1; //validity
     data_array[index_num][1][thisWay] = 1; //dirty
     recencyUpdater(index_num, thisWay); //recency
+
+    std::string data_val_bits = std::bitset<8>(data_val).to_string();
+    std::string data = data_array[index_num][3][thisWay];
+
+    for (int i=8*offset_num; i<8*(offset_num+1); i++) {
+        data_array[index_num][3][thisWay][i] = data_val_bits[i-8*offset_bits];
+    }
 }
