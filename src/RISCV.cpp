@@ -113,6 +113,7 @@ void RISCV::fetch()
             //read also
         } else {
             I$.allocate(pc);
+            IF_DE.DepFlag_pl = 3;
         }
     }
     
@@ -625,7 +626,7 @@ void RISCV::mem()
                     D$.recencyUpdater(D$.index, D$.thisWay);
                 } else {
                     D$.allocate(MemAdr);
-                    MA_WB.DepFlag_pl = 3;
+                    processor.DepFlag = 3;
                 }
                 D$.write(reg[rs2]);
             } else {
@@ -641,7 +642,7 @@ void RISCV::mem()
                     D$.recencyUpdater(D$.index, D$.thisWay);
                 } else {
                     D$.allocate(MemAdr);
-                    MA_WB.DepFlag_pl = 3;
+                    processor.DepFlag = 3;
                 }
                 D$.write(reg[rs2]);
                 D$.offset_num += 8;
@@ -660,7 +661,7 @@ void RISCV::mem()
                     D$.recencyUpdater(D$.index, D$.thisWay);
                 } else {
                     D$.allocate(MemAdr);
-                    MA_WB.DepFlag_pl = 3;
+                    processor.DepFlag = 3;
                 }
                 D$.write(reg[rs2]);
                 D$.offset_num += 8;
@@ -681,20 +682,16 @@ void RISCV::mem()
             default: break;   
         }
     }
-    else if (op_code == 127)
-    {
+    
+    else if (op_code == 127) {
         std::cout<<"MEMORY: (Exit instruction)\n";
-    }
-    else if (op_code != 0)
-    {
+    } else if (op_code != 0) {
        std::cout<<"MEMORY: No memory operation.\n";
-    }
-    else if ( (op_code == 0) & (processor.DepFlag == 2) )
-    {
+    } else if ( (op_code == 0) & (processor.DepFlag == 3) ) {
+        std::cout<<"MEMORY: Memory stall!\n";
+    } else if ( (op_code == 0) & (processor.DepFlag == 2) ) {
         std::cout<<"MEMORY: Data dependency bubble!\n";
-    }
-    else if ( (op_code == 0) & (processor.DepFlag == 1) )
-    {
+    } else if ( (op_code == 0) & (processor.DepFlag == 1) ) {
         std::cout<<"MEMORY: Control dependency bubble!\n";
     }
 }
@@ -713,17 +710,14 @@ void RISCV::write_back() {
             }
         }
         else std::cout<<"WRITEBACK: Write 0 to R0\n";
-    }
-    else if (op_code != 0)
-    {
-        std::cout<<"WRITEBACK: No register writeback operation.\n";
-    }
-    else if ( (op_code == 0) & (processor.DepFlag == 2) )
-    {
+    
+    } else if (op_code != 0) {
+       std::cout<<"WRITEBACK: No register write back operation.\n";
+    } else if ( (op_code == 0) & (processor.DepFlag == 3) ) {
+        std::cout<<"WRITEBACK: Memory stall!\n";
+    } else if ( (op_code == 0) & (processor.DepFlag == 2) ) {
         std::cout<<"WRITEBACK: Data dependency bubble!\n";
-    }
-    else if ( (op_code == 0) & (processor.DepFlag == 1) )
-    {
+    } else if ( (op_code == 0) & (processor.DepFlag == 1) ) {
         std::cout<<"WRITEBACK: Control dependency bubble!\n";
     }
     
