@@ -62,6 +62,7 @@ public:
     //Since byte is the smallest unit of memory being loaded or stored, 
     //the map used in this program will have 1-byte addressing.
     std::map<uint32_t, uint8_t> memory;
+    std::map<uint32_t, uint32_t> instruction_memory;
 
 
     //constructor function

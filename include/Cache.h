@@ -3,6 +3,10 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
+
+#include "RISCV.h"
+#include "Pipeline.h"
 
 using namespace std;
 

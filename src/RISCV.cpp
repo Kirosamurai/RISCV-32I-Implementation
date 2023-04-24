@@ -103,9 +103,22 @@ void RISCV::instruction_exit()
 }    
 
 
+
 //------------------------------------------FETCH()------------------------------------------
 void RISCV::fetch()
 {       
+    // void instructionMainMemoryUpload() {
+    //     char currentpc[11];
+    //     char currentinstruction[11];
+    //     uint32_t currentpc_number;
+    //     uint32_t bits;
+    //     while (fscanf(programcode, "%s %s", currentpc, currentinstruction) != EOF) {
+    //         currentpc_number = stringtohex(currentpc);
+    //         bits = stringtohex(currentinstruction);
+    //         instruction_memory[currentpc_number] = bits;
+    //     }
+    // }
+    
     if (cache) {
         bool hit = I$.isPresent(pc);
         if (hit) {
