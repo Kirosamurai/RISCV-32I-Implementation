@@ -1,5 +1,7 @@
 #include <iostream>
 #include <bitset>
+#include <string>
+#include <cstring>
 #include "Cache.h"
 
 bool Cache::isPresent(uint32_t add) {
@@ -29,8 +31,7 @@ bool Cache::isPresent(uint32_t add) {
 std::string Cache::mainMemoryLoader(int whichCache, uint32_t mem_address) {
   if (whichCache == 1) // I$
   {
-    if ((processor.instruction_memory.find(mem_address)) ==
-        (processor.instruction_memory.end())) {
+    if ((processor.instruction_memory.find(mem_address)) == (processor.instruction_memory.end())) {
       processor.instruction_memory[mem_address] = 0;
     }
     uint8_t value_at_memory = processor.instruction_memory[mem_address];
@@ -72,7 +73,6 @@ int Cache::recencyTranslateVal(int index, int way) {
 }
 
 void Cache::recencyUpdater(int index, int way) {
-  int buffer[recency_bits];
   std::string max_val_string;
   std::string min_val_string;
   for (int i = 0; i < recency_bits; i++) {
