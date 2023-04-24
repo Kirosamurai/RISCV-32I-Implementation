@@ -92,7 +92,7 @@ public:
     void allocate(uint32_t mem_address);
 
     //IF HIT: read or write
-    void write();
+    void write(uint8_t data);
     uint8_t read();
 
 };
