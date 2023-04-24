@@ -85,6 +85,12 @@ public:
     //function that returns the data stored in main memory
     //called inside allocate()
     std::string mainMemoryLoader(int whichCache, uint32_t mem_address);
+    // function that converts a string recency_bits to int value
+    int recencyTranslateVal(int index, int way);
+    // function that converts a int value into recency_bits and stores it at given location
+    void recencyAssignVal(int index, int way, int value);
+    // function that checks if the victim is dirty. if dirty, the contents of the victim block are uploaded to main memory.
+    void dirtyVictim(int index, int way);
     
     // IF MISS: choose and kick victim, retreive from main memory, update recency
     void allocate(uint32_t mem_address);
@@ -98,5 +104,7 @@ public:
 
 extern Cache I$;
 extern Cache D$;
+
+extern RISCV processor;
 
 #endif
