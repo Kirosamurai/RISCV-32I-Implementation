@@ -35,7 +35,7 @@ std::string Cache::mainMemoryLoader(int whichCache, uint32_t mem_address) {
       processor.instruction_memory[mem_address] = 0;
     }
     uint8_t value_at_memory = processor.instruction_memory[mem_address];
-    return std::bitset<8>(value_at_memory).to_string();
+    return std::bitset<32>(value_at_memory).to_string();
 
   } else // D$
   {
