@@ -116,6 +116,7 @@ public:
 
     bool pipeline;
     bool forward;
+    bool cache;
 
     void fetch();
     void decode();

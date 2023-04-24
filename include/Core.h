@@ -6,8 +6,8 @@
 #include <iostream>
 #include <stdlib.h>
 
+#include "Cache.h"
 #include "Pipeline.h"
-#include "Instruction_Packet.h"
 #include "RISCV.h"
 #include "GUI.h"
 
@@ -62,7 +62,7 @@ public:
         caching = false;
         i_isDirect = false;
         d_isDirect = false;
-        
+
         pipelining = false;
         forwarding = false;
         tracing = false;

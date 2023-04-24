@@ -27,6 +27,7 @@ bool Cache::isPresent(uint32_t add) {
 }
 
 uint8_t Cache::read() {
+    
     uint8_t data_val;
 
     int index_num;
@@ -60,8 +61,7 @@ void Cache::write(uint8_t data_val) {
 
     data_array[index_num][0][thisWay] = 1; //validity
     data_array[index_num][1][thisWay] = 1; //dirty
-    recencyUpdater(index_num, thisWay); //recency
-
+    
     std::string data_val_bits = std::bitset<8>(data_val).to_string();
     std::string data = data_array[index_num][3][thisWay];
 

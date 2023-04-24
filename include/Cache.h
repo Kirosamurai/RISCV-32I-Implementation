@@ -85,13 +85,12 @@ public:
     //function that returns the data stored in main memory
     //called inside allocate()
     std::string mainMemoryLoader(int whichCache, uint32_t mem_address);
-    //updates recency bits according to replacement policy
-    void recencyUpdater(int index, int way);
     
     // IF MISS: choose and kick victim, retreive from main memory, update recency
     void allocate(uint32_t mem_address);
 
-    //IF HIT: read or write
+    //IF HIT: update recency, then read or write
+    void recencyUpdater(int index, int way);
     void write(uint8_t data);
     uint8_t read();
 

@@ -15,6 +15,8 @@ InstructionPacket DE_EX_IP;
 InstructionPacket EX_MA_IP;
 InstructionPacket MA_WB_IP;
 
+RISCV processor;
+
 FILE* output;
 
 //Function will set all pre requisites for running the processor
@@ -33,6 +35,9 @@ void Core::loadMemory() {
     //Enabling/disabling pipelining and forwarding:
     processor.pipeline = pipelining;
     processor.forward = forwarding;
+
+    processor.cache = caching;
+    
 
     //------------------------------------------------------
     //json file code

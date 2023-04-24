@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
       CPU.register_file = true;
     }
   }
-  
+
   if ( forNoArguments(argv, argv + argc, "-cache") ) {
     CPU.caching = true;
 
@@ -164,6 +164,7 @@ int main(int argc, char* argv[]) {
     }
 
   }
+
 
   CPU.loadMemory();
   CPU.Run();
