@@ -18,6 +18,21 @@ public:
     char *test_file;
     int N;
     
+    //For phase 3:
+    bool caching;
+    int i_sizeCache;
+    int i_sizeBlock;
+    int i_mapping;
+    int i_ways;
+    bool i_isDirect;
+    int i_replacement;
+    int d_sizeCache;
+    int d_sizeBlock;
+    int d_mapping;
+    int d_ways;
+    bool d_isDirect;
+    int d_replacement;
+    
     //KNOBS read from command line:
     bool pipelining;
     bool forwarding;
@@ -43,6 +58,10 @@ public:
     Core() {
         
         N = 5;
+        
+        caching = false;
+        i_isDirect = false;
+        d_isDirect = false;
         
         pipelining = false;
         forwarding = false;
