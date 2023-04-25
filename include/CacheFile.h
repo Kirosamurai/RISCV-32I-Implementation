@@ -63,10 +63,11 @@ public:
             set_num = 1;
         }
 
-        int recency_bits = log2(associativity);
-        int offset_bits = log2(block_size);
-        int index_bits = log2(set_num);
-        int tag_bits = 32 - index_bits - offset_bits;
+        recency_bits = log2(associativity);
+        offset_bits = log2(block_size);
+        index_bits = log2(set_num);
+        tag_bits = 32 - index_bits - offset_bits;
+        
     }
 
     //set asociative constructor
@@ -78,10 +79,11 @@ public:
         associativity = ways;
         set_num = block_num/associativity;
 
-        int recency_bits = log2(associativity);
-        int offset_bits = log2(block_size);
-        int index_bits = log2(set_num);
-        int tag_bits = 32 - index_bits - offset_bits;
+        recency_bits = log2(associativity);
+        offset_bits = log2(block_size);
+        index_bits = log2(set_num);
+        tag_bits = 32 - index_bits - offset_bits;
+        
     }
 
     int tag_bits;

@@ -11,7 +11,6 @@ bool Cache::isPresent(uint32_t add) {
     std::cout<<"isPresent started\n";
     std::string address = std::bitset<32>(add).to_string();
 
-    std::cout<<tag_bits<<endl<<index_bits<<endl<<offset_bits<<endl;
     tag = address.substr(0, tag_bits);
     index = address.substr(tag_bits, index_bits);
     offset = address.substr(tag_bits+index_bits, offset_bits);
