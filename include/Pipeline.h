@@ -161,6 +161,8 @@ extern PipelineRegister DE_EX;
 extern PipelineRegister EX_MA;
 extern PipelineRegister MA_WB;
 
+class RISCV;
+
 extern RISCV processor;
 
 #endif
