@@ -8,6 +8,7 @@
 
 bool Cache::isPresent(uint32_t add) {
     
+    std::cout<<"isPresent started\n";
     std::string address = std::bitset<32>(add).to_string();
 
     tag = address.substr(0, tag_bits);
@@ -25,13 +26,14 @@ bool Cache::isPresent(uint32_t add) {
             return true;
         }
     }
-
+    std::cout<<"isPresent completed\n";
     return false;
 
 }
 
 // mem_address here has to be the starting address of the block.
 void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, int way) {
+  std::cout<<"mml started\n";
   if (whichCache == 1) // I$
   {
     for (int i = 0; i < (block_size); i += 4) {
@@ -55,9 +57,11 @@ void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, in
     }
     return;
   }
+  std::cout<<"mml completed\n";
 }
 
 void Cache::recencyAssignVal(int index, int way, int value) {
+  std::cout<<"recencyAssignVal started\n";
   std::string answer;
   int temp = value;
   for (int i = 0; i < recency_bits; i++) {
@@ -69,9 +73,11 @@ void Cache::recencyAssignVal(int index, int way, int value) {
     temp = temp / 2;
   }
   data_array[index][2][way] = answer;
+  std::cout<<"recencyAssignVal ended\n";
 }
 
 int Cache::recencyTranslateVal(int index, int way) {
+  std::cout<<"recencyTVal ended\n";
   int answer = 0;
   std::string r_bits_copy = data_array[index][2][way];
   for (int i = 0; i < recency_bits; i++) {
@@ -79,10 +85,12 @@ int Cache::recencyTranslateVal(int index, int way) {
       answer += pow(2, i);
     }
   }
+  std::cout<<"recencyTVal ended\n";
   return answer;
 }
 
 void Cache::recencyUpdater(std::string index_str, int way) {
+  std::cout<<"recencyUpdater started\n";
   int index = 0;
   for (int i=index_bits-1; i>=0; i--) {
     index += index_str[i] * pow(2,index_bits-i-1);
@@ -133,9 +141,11 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     break;
   }
   }
+  std::cout<<"recencyUpdater ended\n";
 }
 
 void Cache::dirtyVictim(int index_num, int way) {
+  std::cout<<"dirtyvictim started\n";
   if ((data_array[index_num][1][way]) == "1") {
     // victim is dirty
     std::string victim_address;
@@ -169,6 +179,7 @@ void Cache::dirtyVictim(int index_num, int way) {
       processor.memory[victim_address_num + i] = victim_value_data;
     }
   }
+  std::cout<<"dirtyvictim ended\n";
 }
 
 uint32_t Cache::noOffset(uint32_t address) {
@@ -178,7 +189,8 @@ uint32_t Cache::noOffset(uint32_t address) {
 }
 
 // IF MISS:
-void Cache::allocate(uint32_t mem_address) {	
+void Cache::allocate(uint32_t mem_address) {
+  std::cout<<"allocate start\n";	
   int index_num;	
   for (int i = index_bits - 1; i >= 0; i--) {	
     index_num += index[i] * pow(2, index_bits - i - 1);	
@@ -377,10 +389,12 @@ void Cache::allocate(uint32_t mem_address) {
       recencyUpdater(index, thisWay);	
     }	
   }	
+  std::cout<<"allocate end\n";	
 }
 
 //IF HIT:
 uint8_t Cache::read() {
+  std::cout<<"read start\n";	
     
     uint8_t data_val;
 
@@ -400,11 +414,12 @@ uint8_t Cache::read() {
     }
 
     return data_val;
+    std::cout<<"read end\n";	
 
 }
 
 uint32_t Cache::readI() {
-    
+    std::cout<<"readI start\n";	
     uint32_t data_val;
 
     int index_num;
@@ -421,12 +436,14 @@ uint32_t Cache::readI() {
     for (int i=8*offset_num; i<8*(offset_num+4); i++) {
         data_val += data[i] * pow(2,8*offset_bits+31-i);
     }
-
+    std::cout<<"readI end\n";	
     return data_val;
+    
 
 }
 
 void Cache::write(uint8_t data_val) {
+    std::cout<<"write start\n";	
     int index_num;
     for (int i=index_bits-1; i>=0; i--) {
         index_num += index[i] * pow(2,index_bits-i-1);
@@ -445,10 +462,11 @@ void Cache::write(uint8_t data_val) {
     for (int i=8*offset_num; i<8*(offset_num+1); i++) {
         data_array[index_num][3][thisWay][i] = data_val_bits[i-8*offset_bits];
     }
+    std::cout<<"write end\n";	
 }
 
 int Cache::miss_type(uint32_t mem_address){
-
+  std::cout<<"miss_type start\n";	
   int index_num;
   for (int i=index_bits-1; i>=0; i--) {
       index_num += index[i] * pow(2,index_bits-i-1);
@@ -465,5 +483,6 @@ int Cache::miss_type(uint32_t mem_address){
     }
     return 3; //CAPACITY MISS
   }
+  std::cout<<"miss_type end\n";	
 }
 
