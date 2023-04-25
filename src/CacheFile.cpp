@@ -35,28 +35,32 @@ bool Cache::isPresent(uint32_t add) {
 void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, int way) {
   std::cout<<"mml started\n";
   if (whichCache == 1) // I$
-  {
+  { 
+    std::string data_upload;
     for (int i = 0; i < (block_size); i += 4) {
       if ((processor.instruction_memory.find(mem_address + i)) ==
           (processor.instruction_memory.end())) {
         processor.instruction_memory[mem_address + i] = 0;
       }
       uint32_t value_at_memory = processor.instruction_memory[mem_address + i];
-      data_array[index][3][way] += std::bitset<32>(value_at_memory).to_string();
+      data_upload += std::bitset<32>(value_at_memory).to_string();
     }
+    data_array[index][3][way] = data_upload;
     std::cout<<data_array[index][3][way] << endl;
     std::cout<<"mml completed\n";
     return;
   } else // D$
   {
+    std::string data_upload;
     for (int i = 0; i < (block_size); i++) {
       if ((processor.memory.find(mem_address + i)) ==
           (processor.memory.end())) {
         processor.memory[mem_address + i] = 0;
       }
       uint8_t value_at_memory = processor.memory[mem_address + i];
-      data_array[index][3][way] += std::bitset<8>(value_at_memory).to_string();
+      data_upload += std::bitset<8>(value_at_memory).to_string();
     }
+    data_array[index][3][way] = data_upload;
     std::cout<<data_array[index][3][way] << endl;
     std::cout<<"mml completed\n";
     return;
