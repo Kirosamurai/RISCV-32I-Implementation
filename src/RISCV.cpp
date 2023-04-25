@@ -119,21 +119,21 @@ void RISCV::fetch()
         }
         else
         {   
-            bool hit = I$.isPresent(pc);
+            bool hit = I.isPresent(pc);
             if (hit) {
-                I$.hits++;
-                I$.recencyUpdater(I$.index, I$.thisWay);
+                I.hits++;
+                I.recencyUpdater(I.index, I.thisWay);
             } else {
-                int miss = I$.miss_type(MemAdr);
+                int miss = I.miss_type(MemAdr);
                 switch (miss){
                 case 1:
-                    I$.cold_miss++;
+                    I.cold_miss++;
                     break;
                 case 2:
-                    I$.conflict_miss++;
+                    I.conflict_miss++;
                     break;
                 case 3:
-                    I$.capacity_miss++;
+                    I.capacity_miss++;
                     break;
                 }
 
@@ -141,12 +141,12 @@ void RISCV::fetch()
                 printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                 printf("----------------------------------------------------------\n");
 
-                clock_cycle += I$.penalty;
-                I$.memory_stalls += I$.penalty;
+                clock_cycle += I.penalty;
+                I.memory_stalls += I.penalty;
                 
-                I$.allocate(pc);
+                I.allocate(pc);
             }
-            bits = I$.readI();
+            bits = I.readI();
         }
         
 
@@ -583,21 +583,21 @@ void RISCV::mem()
             case 1:    
             
             if (cache) {
-                bool hit = D$.isPresent(MemAdr);
+                bool hit = D.isPresent(MemAdr);
                 if (hit) {
-                    D$.hits++;
-                    D$.recencyUpdater(D$.index, D$.thisWay);
+                    D.hits++;
+                    D.recencyUpdater(D.index, D.thisWay);
                 } else {
-                    int miss = D$.miss_type(MemAdr);
+                    int miss = D.miss_type(MemAdr);
                     switch (miss){
                     case 1:
-                        D$.cold_miss++;
+                        D.cold_miss++;
                         break;
                     case 2:
-                        D$.conflict_miss++;
+                        D.conflict_miss++;
                         break;
                     case 3:
-                        D$.capacity_miss++;
+                        D.capacity_miss++;
                         break;
                     }
 
@@ -605,12 +605,12 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    clock_cycle += D$.penalty;
-                    D$.memory_stalls += D$.penalty;
+                    clock_cycle += D.penalty;
+                    D.memory_stalls += D.penalty;
 
-                    D$.allocate(MemAdr);
+                    D.allocate(MemAdr);
                 }
-                LoadData = D$.read();
+                LoadData = D.read();
                 if ((LoadData&(1<<7))!=0) {LoadData+=0xFFFFFF00;}
             } else {
                 if (memory.find(MemAdr)==memory.end()) {
@@ -629,21 +629,21 @@ void RISCV::mem()
             case 2:
             
             if (cache) {
-                bool hit = D$.isPresent(MemAdr);
+                bool hit = D.isPresent(MemAdr);
                 if (hit) {
-                    D$.hits++;
-                    D$.recencyUpdater(D$.index, D$.thisWay);
+                    D.hits++;
+                    D.recencyUpdater(D.index, D.thisWay);
                 } else {
-                    int miss = D$.miss_type(MemAdr);
+                    int miss = D.miss_type(MemAdr);
                     switch (miss){
                     case 1:
-                        D$.cold_miss++;
+                        D.cold_miss++;
                         break;
                     case 2:
-                        D$.conflict_miss++;
+                        D.conflict_miss++;
                         break;
                     case 3:
-                        D$.capacity_miss++;
+                        D.capacity_miss++;
                         break;
                     }
 
@@ -651,16 +651,16 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    clock_cycle += D$.penalty;
-                    D$.memory_stalls += D$.penalty;
+                    clock_cycle += D.penalty;
+                    D.memory_stalls += D.penalty;
 
-                    D$.allocate(MemAdr);
+                    D.allocate(MemAdr);
                 }
                 //Adding Half Word to LoadData
-                LoadData = D$.read();
+                LoadData = D.read();
                 LoadData = LoadData << 8;
-                D$.offset_num += 8;
-                LoadData += D$.read();
+                D.offset_num += 8;
+                LoadData += D.read();
                 if ((LoadData&(1<<15))!=0) {LoadData+=0xFFFF0000;}
             } else {
                 if (memory.find(MemAdr)==memory.end()) {
@@ -684,21 +684,21 @@ void RISCV::mem()
             case 3:   
             
             if (cache) {
-                bool hit = D$.isPresent(MemAdr);
+                bool hit = D.isPresent(MemAdr);
                 if (hit) {
-                    D$.hits++;
-                    D$.recencyUpdater(D$.index, D$.thisWay);
+                    D.hits++;
+                    D.recencyUpdater(D.index, D.thisWay);
                 } else {
-                    int miss = D$.miss_type(MemAdr);
+                    int miss = D.miss_type(MemAdr);
                     switch (miss){
                     case 1:
-                        D$.cold_miss++;
+                        D.cold_miss++;
                         break;
                     case 2:
-                        D$.conflict_miss++;
+                        D.conflict_miss++;
                         break;
                     case 3:
-                        D$.capacity_miss++;
+                        D.capacity_miss++;
                         break;
                     }
 
@@ -706,22 +706,22 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    clock_cycle += D$.penalty;
-                    D$.memory_stalls += D$.penalty;
+                    clock_cycle += D.penalty;
+                    D.memory_stalls += D.penalty;
 
-                    D$.allocate(MemAdr);
+                    D.allocate(MemAdr);
                 }
                 //Adding word to LoadData
-                LoadData = D$.read();
+                LoadData = D.read();
                 LoadData = LoadData << 8;
-                D$.offset_num += 8;
-                LoadData += D$.read();
+                D.offset_num += 8;
+                LoadData += D.read();
                 LoadData = LoadData << 8;
-                D$.offset_num += 8;
-                LoadData += D$.read();
+                D.offset_num += 8;
+                LoadData += D.read();
                 LoadData = LoadData << 8;
-                D$.offset_num += 8;
-                LoadData += D$.read();
+                D.offset_num += 8;
+                LoadData += D.read();
 
             } else {
                 int loop;
@@ -752,21 +752,21 @@ void RISCV::mem()
             
             case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
             if (cache) {
-                bool hit = D$.isPresent(MemAdr);
+                bool hit = D.isPresent(MemAdr);
                 if (hit) {
-                    D$.hits++;
-                    D$.recencyUpdater(D$.index, D$.thisWay);
+                    D.hits++;
+                    D.recencyUpdater(D.index, D.thisWay);
                 } else {
-                    int miss = D$.miss_type(MemAdr);
+                    int miss = D.miss_type(MemAdr);
                     switch (miss){
                     case 1:
-                        D$.cold_miss++;
+                        D.cold_miss++;
                         break;
                     case 2:
-                        D$.conflict_miss++;
+                        D.conflict_miss++;
                         break;
                     case 3:
-                        D$.capacity_miss++;
+                        D.capacity_miss++;
                         break;
                     }
 
@@ -774,12 +774,12 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    clock_cycle += D$.penalty;
-                    D$.memory_stalls += D$.penalty;
+                    clock_cycle += D.penalty;
+                    D.memory_stalls += D.penalty;
 
-                    D$.allocate(MemAdr);
+                    D.allocate(MemAdr);
                 }
-                D$.write(reg[rs2]);
+                D.write(reg[rs2]);
             } else {
                 memory[MemAdr]=reg[rs2];
                 std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
@@ -788,21 +788,21 @@ void RISCV::mem()
             
             case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
             if (cache) {
-                bool hit = D$.isPresent(MemAdr);
+                bool hit = D.isPresent(MemAdr);
                 if (hit) {
-                    D$.hits++;
-                    D$.recencyUpdater(D$.index, D$.thisWay);
+                    D.hits++;
+                    D.recencyUpdater(D.index, D.thisWay);
                 } else {
-                    int miss = D$.miss_type(MemAdr);
+                    int miss = D.miss_type(MemAdr);
                     switch (miss){
                     case 1:
-                        D$.cold_miss++;
+                        D.cold_miss++;
                         break;
                     case 2:
-                        D$.conflict_miss++;
+                        D.conflict_miss++;
                         break;
                     case 3:
-                        D$.capacity_miss++;
+                        D.capacity_miss++;
                         break;
                     }
 
@@ -810,14 +810,14 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    clock_cycle += D$.penalty;
-                    D$.memory_stalls += D$.penalty;
+                    clock_cycle += D.penalty;
+                    D.memory_stalls += D.penalty;
 
-                    D$.allocate(MemAdr);
+                    D.allocate(MemAdr);
                 }
-                D$.write(reg[rs2]);
-                D$.offset_num += 8;
-                D$.write(reg[rs2]>>8);
+                D.write(reg[rs2]);
+                D.offset_num += 8;
+                D.write(reg[rs2]>>8);
             } else {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
@@ -827,21 +827,21 @@ void RISCV::mem()
             
             case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
             if (cache) {
-                bool hit = D$.isPresent(MemAdr);
+                bool hit = D.isPresent(MemAdr);
                 if (hit) {
-                    D$.hits++;
-                    D$.recencyUpdater(D$.index, D$.thisWay);
+                    D.hits++;
+                    D.recencyUpdater(D.index, D.thisWay);
                 } else {
-                    int miss = D$.miss_type(MemAdr);
+                    int miss = D.miss_type(MemAdr);
                     switch (miss){
                     case 1:
-                        D$.cold_miss++;
+                        D.cold_miss++;
                         break;
                     case 2:
-                        D$.conflict_miss++;
+                        D.conflict_miss++;
                         break;
                     case 3:
-                        D$.capacity_miss++;
+                        D.capacity_miss++;
                         break;
                     }
 
@@ -849,18 +849,18 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    clock_cycle += D$.penalty;
-                    D$.memory_stalls += D$.penalty;
+                    clock_cycle += D.penalty;
+                    D.memory_stalls += D.penalty;
 
-                    D$.allocate(MemAdr);
+                    D.allocate(MemAdr);
                 }
-                D$.write(reg[rs2]);
-                D$.offset_num += 8;
-                D$.write(reg[rs2]>>8);
-                D$.offset_num += 8;
-                D$.write(reg[rs2]>>16);
-                D$.offset_num += 8;
-                D$.write(reg[rs2]>>24);
+                D.write(reg[rs2]);
+                D.offset_num += 8;
+                D.write(reg[rs2]>>8);
+                D.offset_num += 8;
+                D.write(reg[rs2]>>16);
+                D.offset_num += 8;
+                D.write(reg[rs2]>>24);
             } else {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);

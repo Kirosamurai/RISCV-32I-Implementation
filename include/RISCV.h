@@ -137,7 +137,7 @@ uint32_t stringtohex(char input[11]);
 
 extern RISCV processor;
 
-extern Cache I$;
-extern Cache D$;
+extern Cache I;
+extern Cache D;
 
 #endif
