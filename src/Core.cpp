@@ -31,6 +31,7 @@ void Core::loadMemory() {
         printf("Error opening input file!\n");
         exit(3); //test file related error
     }
+    processor.instructionMainMemoryUpload();
     
     //Storing value of N:
     processor.reg[3] = N;
