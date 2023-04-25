@@ -62,6 +62,11 @@ public:
             associativity = block_num;
             set_num = 1;
         }
+
+        int recency_bits = log2(associativity);
+        int offset_bits = log2(block_size);
+        int index_bits = log2(set_num);
+        int tag_bits = 32 - index_bits - offset_bits;
     }
 
     //set asociative constructor
@@ -72,12 +77,12 @@ public:
 
         associativity = ways;
         set_num = block_num/associativity;
-    }
 
-    int recency_bits = log2(associativity);
-    int offset_bits = log2(block_size);
-    int index_bits = log2(set_num);
-    int tag_bits = 32 - index_bits - offset_bits;
+        int recency_bits = log2(associativity);
+        int offset_bits = log2(block_size);
+        int index_bits = log2(set_num);
+        int tag_bits = 32 - index_bits - offset_bits;
+    }
 
     std::string tag;
     std::string index;
