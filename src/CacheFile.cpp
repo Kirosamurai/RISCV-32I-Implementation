@@ -114,11 +114,14 @@ void Cache::recencyUpdater(std::string index_str, int way) {
   case 2: // FIFO
   {
     int queue_counter = 0;
-    for (int i = 0; i < associativity; i++) {
-      if (recencyTranslateVal(index, i) != 0) {
+    
+    for (int i=0; i<associativity; i++) {
+      if (data_array[index][0][i] == "1") {
         queue_counter++;
       }
     }
+    
+    std::cout<< "wue count: "<<queue_counter<< endl;
     recencyAssignVal(index, way, queue_counter);
     break;
   }
@@ -172,6 +175,7 @@ void Cache::dirtyVictim(int index_num, int way) {
       processor.memory[victim_address_num + i] = victim_value_data;
     }
   }
+  
   std::cout<<"dirtyvictim ended\n";
 }
 
@@ -187,7 +191,13 @@ void Cache::allocate(uint32_t mem_address) {
   int index_num=0;	
   for (int i = index_bits - 1; i >= 0; i--) {	
     index_num += (index[i]-'0') * pow(2, index_bits - i - 1);	
-  }	
+  }
+
+  std::string max_val_string;
+  for (int i = 0; i < recency_bits; i++) {
+    max_val_string += '1';
+  }
+
   if (associativity == 1) // direct mapped	
   {	
     // check if space exists in the set?	
@@ -261,6 +271,15 @@ void Cache::allocate(uint32_t mem_address) {
             dirtyVictim(index_num, thisWay);	
             break;	
           }	
+        }
+        if (data_array[index_num][2][thisWay] != max_val_string) {
+          for (int i = 0; i < associativity; i++) {
+            // data_array[index][2][i]--;
+            if (data_array[index_num][2][i] != min_val_string) {
+              recencyAssignVal(index_num, i, (recencyTranslateVal(index_num, i) - 1));
+            }
+          }
+          data_array[index_num][2][thisWay] = max_val_string;
         }	
         break;	
       }	

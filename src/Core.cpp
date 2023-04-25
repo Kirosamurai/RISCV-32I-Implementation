@@ -178,6 +178,9 @@ void Core::Run() {
             //Run with pipelining:
             processor.clock_cycle++;
             runCycle();
+            for (int i=0; i<I.associativity; i++) {
+                std::cout<<"tag array: "<<I.tag_array[0][i]<<endl;
+            }
             std::cout<<"--------------------------------------------------\n";
             printf("Clock Cycle %d finished.\n",processor.clock_cycle);
             std::cout<<"--------------------------------------------------\n";
