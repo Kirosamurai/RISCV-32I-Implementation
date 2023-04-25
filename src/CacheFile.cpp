@@ -56,7 +56,6 @@ void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, in
 }
 
 void Cache::recencyAssignVal(int index, int way, int value) {
-  std::cout<<"recencyAssignVal started\n";
   std::string answer;
   int temp = value;
   for (int i = 0; i < recency_bits; i++) {
@@ -68,11 +67,9 @@ void Cache::recencyAssignVal(int index, int way, int value) {
     temp = temp / 2;
   }
   data_array[index][2][way] = answer;
-  std::cout<<"recencyAssignVal ended\n";
 }
 
 int Cache::recencyTranslateVal(int index, int way) {
-  std::cout<<"recencyTVal ended\n";
   int answer = 0;
   std::string r_bits_copy = data_array[index][2][way];
   for (int i = 0; i < recency_bits; i++) {
@@ -80,7 +77,6 @@ int Cache::recencyTranslateVal(int index, int way) {
       answer += pow(2, i);
     }
   }
-  std::cout<<"recencyTVal ended\n";
   return answer;
 }
 
@@ -103,8 +99,11 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     if (data_array[index][2][way] != max_val_string) {
       for (int i = 0; i < associativity; i++) {
         // data_array[index][2][i]--;
-        if (data_array[index][2][i] != min_val_string) {
-          recencyAssignVal(index, i, (recencyTranslateVal(index, i) - 1));
+        if (data_array[index][0][i]=="1")
+        {
+          if (data_array[index][2][i] != min_val_string) {
+          recencyAssignVal(index, i, ((recencyTranslateVal(index, i)) - 1));
+          }
         }
       }
       data_array[index][2][way] = max_val_string;
@@ -124,7 +123,6 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     {
       queue_counter--;
     }
-    std::cout<< "wue count: "<<queue_counter<< endl;
     recencyAssignVal(index, way, queue_counter);
     break;
   }
@@ -134,8 +132,8 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     break;
   }
   case 4: // LFU
-  {
-    if (data_array[index][2][way] != max_val_string) {
+  { 
+      if (data_array[index][2][way] != max_val_string) {
       recencyAssignVal(index, way, (recencyTranslateVal(index, way) + 1));
     }
     break;
@@ -144,7 +142,6 @@ void Cache::recencyUpdater(std::string index_str, int way) {
 }
 
 void Cache::dirtyVictim(int index_num, int way) {
-  std::cout<<"dirtyvictim started\n";
   if ((data_array[index_num][1][way]) == "1") {
     // victim is dirty
     std::string victim_address;
@@ -178,8 +175,6 @@ void Cache::dirtyVictim(int index_num, int way) {
       processor.memory[victim_address_num + i] = victim_value_data;
     }
   }
-  
-  std::cout<<"dirtyvictim ended\n";
 }
 
 uint32_t Cache::noOffset(uint32_t address) {
@@ -189,8 +184,7 @@ uint32_t Cache::noOffset(uint32_t address) {
 }
 
 // IF MISS:
-void Cache::allocate(uint32_t mem_address) {
-  std::cout<<"allocate start\n";	
+void Cache::allocate(uint32_t mem_address) {	
   int index_num=0;	
   for (int i = index_bits - 1; i >= 0; i--) {	
     index_num += (index[i]-'0') * pow(2, index_bits - i - 1);	
@@ -268,10 +262,6 @@ void Cache::allocate(uint32_t mem_address) {
       }	
       case 2: // if FIFO, pick any "00000" and kick	
       {	
-        for (int i = 0; i < associativity; i++)
-        {
-          cout<<"data recency array"<<data_array[index_num][2][i];
-        }
         for (int i = 0; i < associativity; i++) {	
           if ((data_array[index_num][2][i]) == min_val_string) {	
             thisWay = i;	
@@ -298,13 +288,14 @@ void Cache::allocate(uint32_t mem_address) {
       {	
         int least_value = recencyTranslateVal(index_num, 0);	
         thisWay = 0;	
-        for (int i = 0; i < associativity; i++) {	
+        for (int i = 1; i < associativity; i++) {	
           if (recencyTranslateVal(index_num, i) < least_value) {	
             least_value = recencyTranslateVal(index_num, i);	
             thisWay = i;	
           }	
         }	
         dirtyVictim(index_num, thisWay);	
+        break;
       }	
       }	
       // load data from main memory	
@@ -366,7 +357,6 @@ void Cache::allocate(uint32_t mem_address) {
       case 2: // if FIFO, pick any "00000" and kick	
       {	
         for (int i = 0; i < associativity; i++) {	
-          cout<<"data recency array"<<data_array[index_num][2][i];
           if ((data_array[index_num][2][i]) == min_val_string) {	
             thisWay = i;	
             dirtyVictim(index_num, thisWay);	
@@ -390,6 +380,10 @@ void Cache::allocate(uint32_t mem_address) {
       }	
       case 4: // if LFU, find least value and kick	
       {	
+        for (int i=0; i<associativity; i++)
+        {
+          std::cout<<"recency array:"<<data_array[index_num][2][i];
+        }
         int least_value = recencyTranslateVal(index_num, 0);	
         thisWay = 0;	
         for (int i = 0; i < associativity; i++) {	
@@ -399,6 +393,7 @@ void Cache::allocate(uint32_t mem_address) {
           }	
         }	
         dirtyVictim(index_num, thisWay);	
+        break;
       }	
       }	
       // load data from main memory	
@@ -414,7 +409,6 @@ void Cache::allocate(uint32_t mem_address) {
       recencyUpdater(index, thisWay);	
     }	
   }	
-  std::cout<<"allocate end\n";	
 }
 
 //IF HIT:
