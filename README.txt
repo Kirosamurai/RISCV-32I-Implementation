@@ -35,18 +35,19 @@ RISCV-32I-Implementation
   |
   |- bin
     |- RISCV
+    |- Data Memory.mc
   |- doc
     |- Design Doc.docx
   |- include
     |- Core.h
+    |- CacheFile.h
     |- GUI.h
-    |- Instruction_Packet.h
     |- Pipeline.h
     |- RISCV.h
   |- src
     |- Core.cpp
+    |- CacheFile.cpp
     |- GUI.cpp
-    |- Instruction_Packet.cpp
     |- Pipeline.cpp
     |- main.cpp
     |- Makefile
@@ -58,6 +59,8 @@ RISCV-32I-Implementation
     |- bubblesort.mc
     |- fibonacci.s
     |- fibonacci.mc
+    |- LFU.s
+    |- LFU.mc
   |- gui
     |- public
       |- index.html

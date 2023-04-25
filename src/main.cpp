@@ -13,7 +13,7 @@ handles input and output, invokes simulator
 #include <algorithm>
 
 //Function reads command line knobs that do not have any arguments:
-//-pipeline -forward -registers -trace
+//-pipeline -forward -registers -trace -cache
 bool forNoArguments (char** start, char** end, const std::string& knob) {
   return std::find(start, end, knob) != end;
 }
@@ -40,12 +40,14 @@ void help() {
   printf("          | -forward\n");
   printf("          | -trace [<instruction number>]\n");
   printf("          | -registers\n");
+  printf("          | -cache\n");
   printf("          | -h (or) -help\n\n");
   printf("(compulsory knob: -test <filename.mc>)\n(all other knobs are optional:\n");
   printf("          | -h (or) -help will show how to execute\n");
   printf("          | default value of N is 5\n");
-  printf("          | default setting of pipelining, forwarding, tracing, and showing register values is off\n");
+  printf("          | default setting of caching, pipelining, forwarding, tracing, and showing register values is off\n");
   printf("          | if forward/trace is called without calling pipeline, it doesn't do anything\n");
+  printf("          | if cache is called without calling pipeline, it doesn't work\n");
   printf("          | providing instruction number after -trace knob will activate tracing for that particular instruction only, otherwise for all instructions\n");
   printf("          | -registers knob will show values in register file after every cycle)\n\n");
   printf("\n-------------------------------\n");
@@ -121,7 +123,7 @@ int main(int argc, char* argv[]) {
     printf("Instruction Cache Mapping (1 for DM, 2 for SA, 3 for FA): ");
     scanf("%d", &CPU.i_mapping);
     if (CPU.i_mapping == 2) {
-      printf("Instruction cache no. of ways: ");
+      printf("Instruction Cache no. of ways: ");
       scanf("%d", &CPU.i_ways);
       // Cache I(CPU.i_sizeCache, CPU.i_sizeCache, CPU.i_ways);
       // I.whichCache = 1;
@@ -149,7 +151,7 @@ int main(int argc, char* argv[]) {
     scanf("%d", &CPU.d_mapping);
 
     if (CPU.d_mapping == 2) {
-      printf("Data cache no. of ways: ");
+      printf("Data Cache no. of ways: ");
       scanf("%d", &CPU.d_ways);
       // Cache D(CPU.d_sizeCache, CPU.d_sizeCache, CPU.d_ways);
       // D.whichCache = 2;
