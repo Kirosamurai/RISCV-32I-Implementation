@@ -142,13 +142,29 @@ void Cache::dirtyVictim(int index_num, int way) {
       offset_zero += '0';
     }
     victim_address = tag_array[index_num][way] + index + offset_zero;
-    uint32_t victim_address_num = stoi(victim_address);
+    // uint32_t victim_address_num = stoi(victim_address);
+    uint32_t victim_address_num = 0;
+    int victim_address_length = victim_address.length();
+    for (int i=0; i<victim_address_length; i++)
+    {   
+      if (victim_address[victim_address_length-i-1] == '1')
+      {
+          victim_address_num += pow(2, i);
+      }
+    }
     std::string victim_value = data_array[index_num][3][way];
     // since only D$ cache can have dirty memory, we directly access
     // data main memory.
     for (int i = 0; i < (block_size); i++) {
-      processor.memory[victim_address_num + i] =
-          stoi(victim_value.substr(8*i , 8));
+      uint8_t victim_value_data = 0;
+      for (int j = 8*i; j<(8*(i+1)); j++)
+      {   
+        if (victim_value[j] == '1')
+        {
+            victim_value_data += pow(2, 8*i + 7 - j);
+        }
+      }
+      processor.memory[victim_address_num + i] = victim_value_data;
     }
   }
 }
