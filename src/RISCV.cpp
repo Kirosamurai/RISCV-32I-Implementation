@@ -138,7 +138,6 @@ void RISCV::fetch()
     if (cache) {
         
         bool hit = false;
-        std::cout<<"Reached Fetch.";
         // what does processor do if pc location is not aligned?: sends to end of program [program terminated.]
         // if pc location is invalid: 0000000 is inserted [a bubble].
         uint32_t bits;
@@ -150,7 +149,6 @@ void RISCV::fetch()
         else
         {   
             hit = I.isPresent(pc);
-            std::cout<<hit<<endl;
             if (hit) {
                 I.hits++;
                 I.recencyUpdater(I.index, I.thisWay);
@@ -180,9 +178,7 @@ void RISCV::fetch()
             I.offset_num = 0;
             bits = I.readI();
         }
-        
 
-        std::cout<<bits<<endl;
         if (bits == 0)
         {
             for (int i=0; i<32; i++) {
@@ -251,7 +247,6 @@ void RISCV::fetch()
     }
     
     }
-    std::cout<<"Ended Fetch.\n";
     reset(); //to reset all control lines
 }
 

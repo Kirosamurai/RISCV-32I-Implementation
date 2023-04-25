@@ -132,7 +132,7 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     break;
   }
   case 4: // LFU
-  { 
+  {   
       if (data_array[index][2][way] != max_val_string) {
       recencyAssignVal(index, way, (recencyTranslateVal(index, way) + 1));
     }
@@ -320,13 +320,8 @@ void Cache::allocate(uint32_t mem_address) {
         space_found = true;	
         // update recency bits	
         // if LFU policy, the new recency bits must be initialized to zero.	
-        if (replace == 4) {	
-          std::string min_val_string;	
-          for (int i = 0; i < recency_bits; i++) {	
-            min_val_string += '0';	
-          }	
-          data_array[index_num][2][thisWay] = min_val_string;	
-        }	
+        thisWay = i;
+        recencyAssignVal(index_num,thisWay,0);
         recencyUpdater(index, i);	
         // load data from main memory	
         data_array[index_num][0][i] = "1";	
@@ -380,10 +375,6 @@ void Cache::allocate(uint32_t mem_address) {
       }	
       case 4: // if LFU, find least value and kick	
       {	
-        for (int i=0; i<associativity; i++)
-        {
-          std::cout<<"recency array:"<<data_array[index_num][2][i];
-        }
         int least_value = recencyTranslateVal(index_num, 0);	
         thisWay = 0;	
         for (int i = 0; i < associativity; i++) {	
@@ -413,7 +404,6 @@ void Cache::allocate(uint32_t mem_address) {
 
 //IF HIT:
 uint8_t Cache::read() {
-  std::cout<<"read start\n";	
     
     uint8_t data_val = 0;
     offset_num = 0;
@@ -433,7 +423,6 @@ uint8_t Cache::read() {
         data_val += (data[i]-'0') * pow(2,8*offset_num+7-i);
     }
 
-    std::cout<<"read end\n";
     return data_val;
 
 }
@@ -461,7 +450,6 @@ uint32_t Cache::readI() {
 }
 
 void Cache::write(uint8_t data_val) {
-    std::cout<<"write start\n";	
     int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
         index_num += (index[i]-'0') * pow(2,index_bits-i-1);
@@ -481,11 +469,9 @@ void Cache::write(uint8_t data_val) {
     for (int i=8*offset_num; i<8*(offset_num+1); i++) {
         data_array[index_num][3][thisWay][i] = (char) (data_val_bits[i-8*offset_num]);
     }
-    std::cout<<"write end\n";	
 }
 
 int Cache::miss_type(uint32_t mem_address){
-  std::cout<<"miss_type start\n";	
   int index_num=0;
   for (int i=index_bits-1; i>=0; i--) {
       index_num += (index[i]-'0') * pow(2,index_bits-i-1);
@@ -493,16 +479,13 @@ int Cache::miss_type(uint32_t mem_address){
 
   if(std::find(mct.begin(),mct.end(), mem_address) == mct.end()){
     mct.push_back(mem_address);
-    std::cout<<"miss_type end\n";
     return 1; //COLD MISS
   }else{
     for(int i=0; i<associativity; i++){
       if(data_array[index_num][0][i] == "0"){
-        std::cout<<"miss_type end\n";
         return 2; //CONFLICT MISS
       }
     }
-    std::cout<<"miss_type end\n";
     return 3; //CAPACITY MISS
   }
   	
