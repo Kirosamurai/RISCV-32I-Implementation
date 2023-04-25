@@ -115,11 +115,11 @@ int main(int argc, char* argv[]) {
 
     printf("\nEnter Instruction cache specifications:\n");
     printf("Instruction Cache Size (in bytes): ");
-    scanf("%d", CPU.i_sizeCache);
-    printf("Instruction Cache Size (in bytes): ");
-    scanf("%d", CPU.i_sizeBlock);
+    std::cin>>CPU.i_sizeCache;
+    printf("Instruction Cache Block Size (in bytes): ");
+    std::cin>>CPU.i_sizeBlock;
     printf("Instruction Cache Mapping (1 for DM, 2 for SA, 3 for FA): ");
-    scanf("%d", CPU.i_mapping);
+    std::cin>>CPU.i_mapping;
     if (CPU.i_mapping == 2) {
       printf("Instruction cache no. of ways: ");
       scanf("%d", CPU.i_ways);
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
     printf("\n\nEnter Data cache specifications:\n");
     printf("Data Cache Size (in bytes): ");
     scanf("%d", CPU.d_sizeCache);
-    printf("Data Cache Size (in bytes): ");
+    printf("Data Cache Block Size (in bytes): ");
     scanf("%d", CPU.d_sizeBlock);
     printf("Data Cache Mapping (1 for DM, 2 for SA, 3 for FA): ");
     scanf("%d", CPU.d_mapping);
