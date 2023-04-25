@@ -126,8 +126,8 @@ public:
     int penalty;
 };
 
-extern Cache I$;
-extern Cache D$;
+extern Cache I;
+extern Cache D;
 
 class RISCV;
 
