@@ -115,14 +115,14 @@ int main(int argc, char* argv[]) {
 
     printf("\nEnter Instruction cache specifications:\n");
     printf("Instruction Cache Size (in bytes): ");
-    std::cin>>CPU.i_sizeCache;
+    scanf("%d", &CPU.i_sizeCache);
     printf("Instruction Cache Block Size (in bytes): ");
-    std::cin>>CPU.i_sizeBlock;
+    scanf("%d", &CPU.i_sizeBlock);
     printf("Instruction Cache Mapping (1 for DM, 2 for SA, 3 for FA): ");
-    std::cin>>CPU.i_mapping;
+    scanf("%d", &CPU.i_mapping);
     if (CPU.i_mapping == 2) {
       printf("Instruction cache no. of ways: ");
-      scanf("%d", CPU.i_ways);
+      scanf("%d", &CPU.i_ways);
       // Cache I(CPU.i_sizeCache, CPU.i_sizeCache, CPU.i_ways);
       // I.whichCache = 1;
     } else {
@@ -134,23 +134,23 @@ int main(int argc, char* argv[]) {
     }
     if (CPU.i_isDirect == false) {
       printf("Instruction Cache replacement policy (1 for LRU, 2 for FIFO, 3 for RANDOM, 4 for LFU): ");
-      scanf("%d", CPU.i_replacement);
+      scanf("%d", &CPU.i_replacement);
       // I.replace = CPU.i_replacement;
     }
     printf("Instruction Cache Miss Penalty: ");
-    scanf("%d", CPU.i_penalty);
+    scanf("%d", &CPU.i_penalty);
 
     printf("\n\nEnter Data cache specifications:\n");
     printf("Data Cache Size (in bytes): ");
-    scanf("%d", CPU.d_sizeCache);
+    scanf("%d", &CPU.d_sizeCache);
     printf("Data Cache Block Size (in bytes): ");
-    scanf("%d", CPU.d_sizeBlock);
+    scanf("%d", &CPU.d_sizeBlock);
     printf("Data Cache Mapping (1 for DM, 2 for SA, 3 for FA): ");
-    scanf("%d", CPU.d_mapping);
+    scanf("%d", &CPU.d_mapping);
 
     if (CPU.d_mapping == 2) {
       printf("Data cache no. of ways: ");
-      scanf("%d", CPU.d_ways);
+      scanf("%d", &CPU.d_ways);
       // Cache D(CPU.d_sizeCache, CPU.d_sizeCache, CPU.d_ways);
       // D.whichCache = 2;
     } else {
@@ -162,11 +162,11 @@ int main(int argc, char* argv[]) {
     }
     if (CPU.d_isDirect == false) {
       printf("Data Cache replacement policy (1 for LRU, 2 for FIFO, 3 for RANDOM, 4 for LFU): ");
-      scanf("%d", CPU.d_replacement);
+      scanf("%d", &CPU.d_replacement);
       // D.replace = CPU.d_replacement;
     }
     printf("Data Cache Miss Penalty: ");
-    scanf("%d", CPU.d_penalty);
+    scanf("%d", &CPU.d_penalty);
 
   }
 
