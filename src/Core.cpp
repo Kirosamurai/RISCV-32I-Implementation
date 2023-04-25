@@ -38,7 +38,22 @@ void Core::loadMemory() {
 
     //Enabling/disabling cache:
     processor.cache = caching;
-    
+    if (caching) {
+        processor.proc_i_sizeCache = i_sizeCache;
+        processor.proc_i_sizeBlock = i_sizeBlock;
+        processor.proc_i_mapping = i_mapping;
+        processor.proc_i_ways = i_ways;
+        processor.proc_i_isDirect = i_isDirect;
+        processor.proc_i_replacement = i_replacement;
+        processor.proc_i_penalty = i_penalty;
+        processor.proc_d_sizeCache = d_sizeCache;
+        processor.proc_d_sizeBlock = d_sizeBlock;
+        processor.proc_d_mapping = d_mapping;
+        processor.proc_d_ways = d_ways;
+        processor.proc_d_isDirect = d_isDirect;
+        processor.proc_d_replacement = d_replacement;
+        processor.proc_d_penalty = d_penalty;
+    }
 
     //------------------------------------------------------
     //json file code
@@ -154,6 +169,7 @@ void Core::Run() {
             std::cout<<"--------------------------------------------------\n\n";
         }
     }else{
+        if (caching) {processor.createCache();}
         while(1) {
             //Run with pipelining:
             processor.clock_cycle++;

@@ -118,7 +118,22 @@ public:
 
     bool pipeline;
     bool forward;
+    
     bool cache;
+    int proc_i_sizeCache;
+    int proc_i_sizeBlock;
+    int proc_i_mapping;
+    int proc_i_ways;
+    bool proc_i_isDirect;
+    int proc_i_replacement;
+    int proc_i_penalty;
+    int proc_d_sizeCache;
+    int proc_d_sizeBlock;
+    int proc_d_mapping;
+    int proc_d_ways;
+    bool proc_d_isDirect;
+    int proc_d_replacement;
+    int proc_d_penalty;
 
     void fetch();
     void decode();
@@ -129,6 +144,8 @@ public:
     void reset();
     void store_memory(); 
     void instruction_exit();
+
+    void createCache();
 };
 
 class Cache;

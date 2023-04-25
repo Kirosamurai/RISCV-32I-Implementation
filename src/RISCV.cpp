@@ -10,6 +10,15 @@
 #include "CacheFile.h"
 #include "Core.h"
 
+void RISCV::createCache() {
+    //I$:
+    if (proc_i_mapping == 2) {Cache I(proc_i_sizeCache, proc_i_sizeCache, proc_i_ways);}
+    else {Cache I(proc_i_sizeCache, proc_i_sizeBlock, proc_i_isDirect);}
+    //D$:
+    if (proc_d_mapping == 2) {Cache D(proc_d_sizeCache, proc_d_sizeCache, proc_d_ways);}
+    else {Cache D(proc_d_sizeCache, proc_d_sizeBlock, proc_d_isDirect);}
+}
+
 void RISCV::reset(){
     ALUres = 0;
     MemAdr = 0;

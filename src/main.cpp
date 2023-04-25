@@ -123,22 +123,22 @@ int main(int argc, char* argv[]) {
     if (CPU.i_mapping == 2) {
       printf("Instruction cache no. of ways: ");
       scanf("%d", CPU.i_ways);
-      Cache I(CPU.i_sizeCache, CPU.i_sizeCache, CPU.i_ways);
-      I.whichCache = 1;
+      // Cache I(CPU.i_sizeCache, CPU.i_sizeCache, CPU.i_ways);
+      // I.whichCache = 1;
     } else {
       if (CPU.i_mapping == 1) {
         CPU.i_isDirect = true;
       }
-      Cache I(CPU.i_sizeCache, CPU.i_sizeBlock, CPU.i_isDirect);
-      I.whichCache = 1;
+      // Cache I(CPU.i_sizeCache, CPU.i_sizeBlock, CPU.i_isDirect);
+      // I.whichCache = 1;
     }
     if (CPU.i_isDirect == false) {
       printf("Instruction Cache replacement policy (1 for LRU, 2 for FIFO, 3 for RANDOM, 4 for LFU): ");
       scanf("%d", CPU.i_replacement);
-      I.replace = CPU.i_replacement;
+      // I.replace = CPU.i_replacement;
     }
     printf("Instruction Cache Miss Penalty: ");
-    scanf("%d", I.penalty);
+    scanf("%d", CPU.i_penalty);
 
     printf("\n\nEnter Data cache specifications:\n");
     printf("Data Cache Size (in bytes): ");
@@ -151,22 +151,22 @@ int main(int argc, char* argv[]) {
     if (CPU.d_mapping == 2) {
       printf("Data cache no. of ways: ");
       scanf("%d", CPU.d_ways);
-      Cache D(CPU.d_sizeCache, CPU.d_sizeCache, CPU.d_ways);
-      D.whichCache = 2;
+      // Cache D(CPU.d_sizeCache, CPU.d_sizeCache, CPU.d_ways);
+      // D.whichCache = 2;
     } else {
       if (CPU.d_mapping == 1) {
         CPU.d_isDirect = true;
       }
-      Cache D(CPU.d_sizeCache, CPU.d_sizeBlock, CPU.d_isDirect);
-      D.whichCache = 2;
+      // Cache D(CPU.d_sizeCache, CPU.d_sizeBlock, CPU.d_isDirect);
+      // D.whichCache = 2;
     }
     if (CPU.d_isDirect == false) {
       printf("Data Cache replacement policy (1 for LRU, 2 for FIFO, 3 for RANDOM, 4 for LFU): ");
       scanf("%d", CPU.d_replacement);
-      D.replace = CPU.d_replacement;
+      // D.replace = CPU.d_replacement;
     }
     printf("Data Cache Miss Penalty: ");
-    scanf("%d", D.penalty);
+    scanf("%d", CPU.d_penalty);
 
   }
 
