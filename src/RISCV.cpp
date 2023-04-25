@@ -25,13 +25,13 @@ void RISCV::instructionMainMemoryUpload() {
 
 void RISCV::createCache() {
     //I$:
-    if (proc_i_mapping == 2) {I.init(proc_i_sizeCache, proc_i_sizeCache, proc_i_ways);}
+    if (proc_i_mapping == 2) {I.init(proc_i_sizeCache, proc_i_sizeBlock, proc_i_ways);}
     else {I.init(proc_i_sizeCache, proc_i_sizeBlock, proc_i_isDirect);}
     I.whichCache = 1;
     I.replace = proc_i_replacement;
     I.penalty = proc_i_penalty;
     //D$:
-    if (proc_d_mapping == 2) {D.init(proc_d_sizeCache, proc_d_sizeCache, proc_d_ways);}
+    if (proc_d_mapping == 2) {D.init(proc_d_sizeCache, proc_d_sizeBlock, proc_d_ways);}
     else {D.init(proc_d_sizeCache, proc_d_sizeBlock, proc_d_isDirect);}
     D.whichCache = 2;
     D.replace = proc_d_replacement;
