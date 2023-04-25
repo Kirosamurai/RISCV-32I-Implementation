@@ -87,8 +87,8 @@ public:
     int tag_bits;
     int index_bits;
     int offset_bits;
-    int receny_bits;
-    
+    int recency_bits;
+
     std::string tag;
     std::string index;
     std::string offset;
