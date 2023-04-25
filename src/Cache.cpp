@@ -3,7 +3,7 @@
 #include <string>
 #include <cstring>
 #include "Cache.h"
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 
 bool Cache::isPresent(uint32_t add) {
     
