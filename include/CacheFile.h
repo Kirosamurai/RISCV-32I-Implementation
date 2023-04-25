@@ -84,6 +84,11 @@ public:
         int tag_bits = 32 - index_bits - offset_bits;
     }
 
+    int tag_bits;
+    int index_bits;
+    int offset_bits;
+    int receny_bits;
+    
     std::string tag;
     std::string index;
     std::string offset;
