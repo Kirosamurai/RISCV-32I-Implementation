@@ -50,7 +50,7 @@ public:
     int whichCache;
 
     //direct mapped and fully associative constructor
-    Cache(int sizeCache, int sizeBlock, bool isDirectMapped) {
+    void init(int sizeCache, int sizeBlock, bool isDirectMapped) {
         cache_size = sizeCache;
         block_size = sizeBlock;
         block_num = cache_size/block_size;
@@ -65,7 +65,7 @@ public:
     }
 
     //set asociative constructor
-    Cache(int sizeCache, int sizeBlock, int ways) {
+    void init(int sizeCache, int sizeBlock, int ways) {
         cache_size = sizeCache;
         block_size = sizeBlock;
         block_num = cache_size/block_size;

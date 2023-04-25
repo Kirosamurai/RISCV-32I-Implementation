@@ -12,11 +12,11 @@
 
 void RISCV::createCache() {
     //I$:
-    if (proc_i_mapping == 2) {Cache I(proc_i_sizeCache, proc_i_sizeCache, proc_i_ways);}
-    else {Cache I(proc_i_sizeCache, proc_i_sizeBlock, proc_i_isDirect);}
+    if (proc_i_mapping == 2) {I.init(proc_i_sizeCache, proc_i_sizeCache, proc_i_ways);}
+    else {I.init(proc_i_sizeCache, proc_i_sizeBlock, proc_i_isDirect);}
     //D$:
-    if (proc_d_mapping == 2) {Cache D(proc_d_sizeCache, proc_d_sizeCache, proc_d_ways);}
-    else {Cache D(proc_d_sizeCache, proc_d_sizeBlock, proc_d_isDirect);}
+    if (proc_d_mapping == 2) {D.init(proc_d_sizeCache, proc_d_sizeCache, proc_d_ways);}
+    else {D.init(proc_d_sizeCache, proc_d_sizeBlock, proc_d_isDirect);}
 }
 
 void RISCV::reset(){

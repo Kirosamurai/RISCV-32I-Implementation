@@ -17,6 +17,9 @@ InstructionPacket MA_WB_IP;
 
 RISCV processor;
 
+Cache I;
+Cache D;
+
 FILE* output;
 
 //Function will set all pre requisites for running the processor
