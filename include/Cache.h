@@ -90,9 +90,9 @@ public:
     //stores value of correct way if HIT
     int thisWay;
 
-    //function that returns the data stored in main memory
+    //function that uploads the block stored in main memory to cache
     //called inside allocate()
-    std::string mainMemoryLoader(int whichCache, uint32_t mem_address);
+    void mainMemoryLoader(int whichCache, uint32_t mem_address, int index, int way);
     // function that converts a string recency_bits to int value
     int recencyTranslateVal(int index, int way);
     // function that converts a int value into recency_bits and stores it at given location
@@ -107,6 +107,9 @@ public:
     void recencyUpdater(std::string index, int way);
     void write(uint8_t data);
     uint8_t read();
+    
+    // function that makes offset bits to 0 from an address
+    uint32_t noOffset(uint32_t address);
     
     //Type of miss
     int miss_type(uint32_t mem_address);
