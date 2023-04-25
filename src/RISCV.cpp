@@ -124,9 +124,29 @@ void RISCV::fetch()
                 I$.hits++;
                 I$.recencyUpdater(I$.index, I$.thisWay);
             } else {
+                int miss = I$.miss_type(MemAdr);
+                switch (miss){
+                case 1:
+                    I$.cold_miss++;
+                    break;
+                case 2:
+                    I$.conflict_miss++;
+                    break;
+                case 3:
+                    I$.capacity_miss++;
+                    break;
+                }
+
+                printf("----------------------------------------------------------\n");
+                printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
+                printf("----------------------------------------------------------\n");
+
+                clock_cycle += I$.penalty;
+                I$.memory_stalls += I$.penalty;
+                
                 I$.allocate(pc);
             }
-            bits = I$.read();
+            bits = I$.readI();
         }
         
 
@@ -585,7 +605,7 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    processor.clock_cycle += D$.penalty;
+                    clock_cycle += D$.penalty;
                     D$.memory_stalls += D$.penalty;
 
                     D$.allocate(MemAdr);
@@ -631,7 +651,7 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    processor.clock_cycle += D$.penalty;
+                    clock_cycle += D$.penalty;
                     D$.memory_stalls += D$.penalty;
 
                     D$.allocate(MemAdr);
@@ -686,7 +706,7 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    processor.clock_cycle += D$.penalty;
+                    clock_cycle += D$.penalty;
                     D$.memory_stalls += D$.penalty;
 
                     D$.allocate(MemAdr);
@@ -754,7 +774,7 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    processor.clock_cycle += D$.penalty;
+                    clock_cycle += D$.penalty;
                     D$.memory_stalls += D$.penalty;
 
                     D$.allocate(MemAdr);
@@ -790,7 +810,7 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    processor.clock_cycle += D$.penalty;
+                    clock_cycle += D$.penalty;
                     D$.memory_stalls += D$.penalty;
 
                     D$.allocate(MemAdr);
@@ -829,7 +849,7 @@ void RISCV::mem()
                     printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
                     printf("----------------------------------------------------------\n");
 
-                    processor.clock_cycle += D$.penalty;
+                    clock_cycle += D$.penalty;
                     D$.memory_stalls += D$.penalty;
 
                     D$.allocate(MemAdr);

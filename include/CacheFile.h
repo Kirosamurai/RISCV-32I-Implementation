@@ -107,6 +107,7 @@ public:
     void recencyUpdater(std::string index, int way);
     void write(uint8_t data);
     uint8_t read();
+    uint32_t readI();
     
     // function that makes offset bits to 0 from an address
     uint32_t noOffset(uint32_t address);

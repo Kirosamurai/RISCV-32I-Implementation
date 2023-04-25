@@ -388,6 +388,32 @@ uint8_t Cache::read() {
 
 }
 
+uint32_t Cache::readI() {
+    
+    uint32_t data_val;
+
+    int index_num;
+    for (int i=index_bits-1; i>=0; i--) {
+        index_num += index[i] * pow(2,index_bits-i-1);
+    }
+
+    for (int i=offset_bits-1; i>=0; i--) {
+        offset_num += offset[i] * pow(2,offset_bits-i-1);
+    }
+
+    std::string data = data_array[index_num][3][thisWay];
+
+    //8x -- 8x+8
+    //8x -- 8x+32
+
+    for (int i=8*offset_num; i<8*(offset_num+4); i++) {
+        data_val += data[i] * pow(2,8*offset_bits+31-i);
+    }
+
+    return data_val;
+
+}
+
 void Cache::write(uint8_t data_val) {
     int index_num;
     for (int i=index_bits-1; i>=0; i--) {
