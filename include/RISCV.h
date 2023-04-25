@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <bitset>
-#include "Cache.h"
+#include "CacheFile.h"
 
 //-------------------------------------------------------------------------------------
 //json file code starts

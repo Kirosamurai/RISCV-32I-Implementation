@@ -7,7 +7,7 @@
 
 #include "RISCV.h"
 #include "Pipeline.h"
-#include "Cache.h"
+#include "CacheFile.h"
 #include "Core.h"
 
 void RISCV::reset(){

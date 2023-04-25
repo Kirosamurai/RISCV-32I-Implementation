@@ -165,9 +165,9 @@ int main(int argc, char* argv[]) {
     }
 
     printf("Instruction Cache Miss Penalty: ");
-    scanf("%d", CPU.i_penalty);
+    scanf("%d", I$.penalty);
     printf("Data Cache Miss Penalty: ");
-    scanf("%d", CPU.d_penalty);
+    scanf("%d", D$.penalty);
 
   }
 

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "Cache.h"
+#include "CacheFile.h"
 #include "Pipeline.h"
 #include "RISCV.h"
 #include "GUI.h"
