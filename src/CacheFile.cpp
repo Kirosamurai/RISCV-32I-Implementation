@@ -8,25 +8,25 @@
 
 bool Cache::isPresent(uint32_t add) {
     
-    std::cout<<"isPresent started\n";
     std::string address = std::bitset<32>(add).to_string();
 
     tag = address.substr(0, tag_bits);
     index = address.substr(tag_bits, index_bits);
     offset = address.substr(tag_bits+index_bits, offset_bits);
-
-    int index_num;
+    
+    int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
-        index_num += index[i] * pow(2,index_bits-i-1);
+        index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
-
+    
     for (int i=0; i<associativity; i++) {
-        if (tag_array[index_num][i] == tag) {
-            thisWay = i;
-            return true;
+        if (tag_array[index_num][i].compare(tag) != 0) {
+            if (data_array[index_num][0][i] == "1") {
+              thisWay = i;
+              return true;
+            }
         }
     }
-    std::cout<<"isPresent completed\n";
     return false;
 
 }
@@ -93,7 +93,7 @@ void Cache::recencyUpdater(std::string index_str, int way) {
   std::cout<<"recencyUpdater started\n";
   int index = 0;
   for (int i=index_bits-1; i>=0; i--) {
-    index += index_str[i] * pow(2,index_bits-i-1);
+    index += (index_str[i]-'0') * pow(2,index_bits-i-1);
   }
 
   std::string max_val_string;
@@ -191,9 +191,9 @@ uint32_t Cache::noOffset(uint32_t address) {
 // IF MISS:
 void Cache::allocate(uint32_t mem_address) {
   std::cout<<"allocate start\n";	
-  int index_num;	
+  int index_num=0;	
   for (int i = index_bits - 1; i >= 0; i--) {	
-    index_num += index[i] * pow(2, index_bits - i - 1);	
+    index_num += (index[i]-'0') * pow(2, index_bits - i - 1);	
   }	
   if (associativity == 1) // direct mapped	
   {	
@@ -396,21 +396,21 @@ void Cache::allocate(uint32_t mem_address) {
 uint8_t Cache::read() {
   std::cout<<"read start\n";	
     
-    uint8_t data_val;
+    uint8_t data_val = 0;
 
-    int index_num;
+    int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
-        index_num += index[i] * pow(2,index_bits-i-1);
+        index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
 
     for (int i=offset_bits-1; i>=0; i--) {
-        offset_num += offset[i] * pow(2,offset_bits-i-1);
+        offset_num += (offset[i]-'0') * pow(2,offset_bits-i-1);
     }
 
     std::string data = data_array[index_num][3][thisWay];
 
     for (int i=8*offset_num; i<8*(offset_num+1); i++) {
-        data_val += data[i] * pow(2,8*offset_bits+7-i);
+        data_val += (data[i]-'0') * pow(2,8*offset_bits+7-i);
     }
 
     return data_val;
@@ -420,21 +420,21 @@ uint8_t Cache::read() {
 
 uint32_t Cache::readI() {
     std::cout<<"readI start\n";	
-    uint32_t data_val;
+    uint32_t data_val = 0;
 
-    int index_num;
+    int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
-        index_num += index[i] * pow(2,index_bits-i-1);
+        index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
 
     for (int i=offset_bits-1; i>=0; i--) {
-        offset_num += offset[i] * pow(2,offset_bits-i-1);
+        offset_num += (offset[i]-'0') * pow(2,offset_bits-i-1);
     }
 
     std::string data = data_array[index_num][3][thisWay];
 
     for (int i=8*offset_num; i<8*(offset_num+4); i++) {
-        data_val += data[i] * pow(2,8*offset_bits+31-i);
+        data_val += (data[i]-'0') * pow(2,8*offset_bits+31-i);
     }
     std::cout<<"readI end\n";	
     return data_val;
@@ -444,9 +444,9 @@ uint32_t Cache::readI() {
 
 void Cache::write(uint8_t data_val) {
     std::cout<<"write start\n";	
-    int index_num;
+    int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
-        index_num += index[i] * pow(2,index_bits-i-1);
+        index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
 
     for (int i=offset_bits-1; i>=0; i--) {
@@ -467,22 +467,25 @@ void Cache::write(uint8_t data_val) {
 
 int Cache::miss_type(uint32_t mem_address){
   std::cout<<"miss_type start\n";	
-  int index_num;
+  int index_num=0;
   for (int i=index_bits-1; i>=0; i--) {
-      index_num += index[i] * pow(2,index_bits-i-1);
+      index_num += (index[i]-'0') * pow(2,index_bits-i-1);
   }
 
   if(std::find(mct.begin(),mct.end(), mem_address) == mct.end()){
     mct.push_back(mem_address);
+    std::cout<<"miss_type end\n";
     return 1; //COLD MISS
   }else{
     for(int i=0; i<associativity; i++){
       if(data_array[index_num][0][i] == "0"){
+        std::cout<<"miss_type end\n";
         return 2; //CONFLICT MISS
       }
     }
+    std::cout<<"miss_type end\n";
     return 3; //CAPACITY MISS
   }
-  std::cout<<"miss_type end\n";	
+  	
 }
 

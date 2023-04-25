@@ -67,6 +67,8 @@ public:
         offset_bits = log2(block_size);
         index_bits = log2(set_num);
         tag_bits = 32 - index_bits - offset_bits;
+
+        offset_num = 0;
         
     }
 
@@ -83,6 +85,8 @@ public:
         offset_bits = log2(block_size);
         index_bits = log2(set_num);
         tag_bits = 32 - index_bits - offset_bits;
+
+        offset_num = 0;
         
     }
 
@@ -91,11 +95,13 @@ public:
     int offset_bits;
     int recency_bits;
 
+    int offset_num;
+
     std::string tag;
     std::string index;
     std::string offset;
 
-    int offset_num = 0;
+    
     
     //returns TRUE for hit, FALSE for miss
     bool isPresent(uint32_t address);

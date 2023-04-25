@@ -130,6 +130,7 @@ void RISCV::fetch()
         else
         {   
             bool hit = I.isPresent(pc);
+            std::cout<<hit<<endl;
             if (hit) {
                 I.hits++;
                 I.recencyUpdater(I.index, I.thisWay);
