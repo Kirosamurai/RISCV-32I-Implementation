@@ -8,6 +8,7 @@
 #include "RISCV.h"
 #include "Pipeline.h"
 #include "Cache.h"
+#include "Core.h"
 
 void RISCV::reset(){
     ALUres = 0;
@@ -102,32 +103,52 @@ void RISCV::instruction_exit()
     exit(0); //program run to completion
 }    
 
-
-
 //------------------------------------------FETCH()------------------------------------------
 void RISCV::fetch()
 {       
-    // void instructionMainMemoryUpload() {
-    //     char currentpc[11];
-    //     char currentinstruction[11];
-    //     uint32_t currentpc_number;
-    //     uint32_t bits;
-    //     while (fscanf(programcode, "%s %s", currentpc, currentinstruction) != EOF) {
-    //         currentpc_number = stringtohex(currentpc);
-    //         bits = stringtohex(currentinstruction);
-    //         instruction_memory[currentpc_number] = bits;
-    //     }
-    // }
     
     if (cache) {
-        bool hit = I$.isPresent(pc);
-        if (hit) {
-            I$.recencyUpdater(I$.index, I$.thisWay);
-            //read also
-        } else {
-            I$.allocate(pc);
-            IF_DE.DepFlag_pl = 3;
+        
+        // what does processor do if pc location is not aligned?: sends to end of program [program terminated.]
+        // if pc location is invalid: 0000000 is inserted [a bubble].
+        uint32_t bits;
+        char currentinstruction[11];
+        if (pc%4 != 0) 
+        {
+            bits = 0xffffffff;
         }
+        else
+        {   
+            bool hit = I$.isPresent(pc);
+            if (hit) {
+                I$.hits++;
+                I$.recencyUpdater(I$.index, I$.thisWay);
+            } else {
+                I$.allocate(pc);
+            }
+            bits = I$.read();
+        }
+        
+
+        if (bits == 0)
+        {
+            for (int i=0; i<32; i++) {
+                instruction[i] = 0;
+            }
+            DepFlag = 0;
+        }
+        else
+        {
+            for (int i=0; i<32; i++) {
+                if (((1<<i)&bits)!=0) {
+                    instruction[i] = 1;
+                } else {
+                    instruction[i]=0;
+                }
+            }
+            std::cout<<"FETCH: Fetch instruction "<<bits<<" from address "<<pc<<'\n';
+        }
+
     }
     
     else {

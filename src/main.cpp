@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
       I$.whichCache = 1;
     } else {
       if (CPU.i_mapping == 1) {
-      CPU.i_isDirect = true;
+        CPU.i_isDirect = true;
       }
       Cache I$(CPU.i_sizeCache, CPU.i_sizeBlock, CPU.i_isDirect);
       I$.whichCache = 1;
@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
       D$.whichCache = 2;
     } else {
       if (CPU.d_mapping == 1) {
-      CPU.d_isDirect = true;
+        CPU.d_isDirect = true;
       }
       Cache D$(CPU.d_sizeCache, CPU.d_sizeBlock, CPU.d_isDirect);
       D$.whichCache = 2;
@@ -165,9 +165,9 @@ int main(int argc, char* argv[]) {
     }
 
     printf("Instruction Cache Miss Penalty: ");
-    scanf("%d", I$.penalty);
+    scanf("%d", CPU.i_penalty);
     printf("Data Cache Miss Penalty: ");
-    scanf("%d", D$.penalty);
+    scanf("%d", CPU.d_penalty);
 
   }
 

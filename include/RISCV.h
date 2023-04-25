@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <bitset>
+#include "Cache.h"
 
 //-------------------------------------------------------------------------------------
 //json file code starts
@@ -133,5 +134,8 @@ public:
 uint32_t stringtohex(char input[11]);
 
 extern RISCV processor;
+
+extern Cache I$;
+extern Cache D$;
 
 #endif
