@@ -19,6 +19,7 @@ void RISCV::instructionMainMemoryUpload() {
         currentpc_number = stringtohex(currentpc);
         bits = stringtohex(currentinstruction);
         instruction_memory[currentpc_number] = bits;
+        std::cout<<instruction_memory[currentpc_number]<<endl;
     }
 }
 
@@ -26,9 +27,15 @@ void RISCV::createCache() {
     //I$:
     if (proc_i_mapping == 2) {I.init(proc_i_sizeCache, proc_i_sizeCache, proc_i_ways);}
     else {I.init(proc_i_sizeCache, proc_i_sizeBlock, proc_i_isDirect);}
+    I.whichCache = 1;
+    I.replace = proc_i_replacement;
+    I.penalty = proc_i_penalty;
     //D$:
     if (proc_d_mapping == 2) {D.init(proc_d_sizeCache, proc_d_sizeCache, proc_d_ways);}
     else {D.init(proc_d_sizeCache, proc_d_sizeBlock, proc_d_isDirect);}
+    D.whichCache = 2;
+    D.replace = proc_d_replacement;
+    D.penalty = proc_d_penalty;
 }
 
 void RISCV::reset(){
@@ -130,6 +137,7 @@ void RISCV::fetch()
     
     if (cache) {
         
+        bool hit = false;
         std::cout<<"Reached Fetch.";
         // what does processor do if pc location is not aligned?: sends to end of program [program terminated.]
         // if pc location is invalid: 0000000 is inserted [a bubble].
@@ -141,7 +149,7 @@ void RISCV::fetch()
         }
         else
         {   
-            bool hit = I.isPresent(pc);
+            hit = I.isPresent(pc);
             std::cout<<hit<<endl;
             if (hit) {
                 I.hits++;
@@ -169,10 +177,12 @@ void RISCV::fetch()
                 
                 I.allocate(pc);
             }
-            bits = I.readI();
+            I.offset_num = 0;
+            bits = I.read();
         }
         
 
+        std::cout<<bits<<endl;
         if (bits == 0)
         {
             for (int i=0; i<32; i++) {
@@ -191,6 +201,8 @@ void RISCV::fetch()
             }
             std::cout<<"FETCH: Fetch instruction "<<bits<<" from address "<<pc<<'\n';
         }
+
+
 
     }
     
@@ -239,7 +251,7 @@ void RISCV::fetch()
     }
     
     }
-    std::cout<<"Reached Fetch.";
+    std::cout<<"Ended Fetch.\n";
     reset(); //to reset all control lines
 }
 
@@ -598,6 +610,7 @@ void RISCV::mem()
     
     if (MemRead==1)
     {   
+        std::cout<<"reading from mem\n";
         RegWrite = 1;
         LoadData = 0;
         switch (LoadType) {   
@@ -631,6 +644,7 @@ void RISCV::mem()
                     clock_cycle += D.penalty;
                     D.memory_stalls += D.penalty;
 
+                    D.offset_num = 0;
                     D.allocate(MemAdr);
                 }
                 LoadData = D.read();
@@ -680,6 +694,7 @@ void RISCV::mem()
                     D.allocate(MemAdr);
                 }
                 //Adding Half Word to LoadData
+                D.offset_num = 0;
                 LoadData = D.read();
                 LoadData = LoadData << 8;
                 D.offset_num += 8;
@@ -735,6 +750,7 @@ void RISCV::mem()
                     D.allocate(MemAdr);
                 }
                 //Adding word to LoadData
+                D.offset_num = 0;
                 LoadData = D.read();
                 LoadData = LoadData << 8;
                 D.offset_num += 8;
@@ -767,9 +783,14 @@ void RISCV::mem()
             
             default: break;   
         }
+
+        std::cout<<"loaded value: "<< LoadData<<endl;
     
+    std::cout<<"reading from mem OVER\n";
     
     } else if (MemWrite==1) {
+
+        std::cout<<"writing to mem\n";
     
         switch (StoreType) {
             
@@ -802,10 +823,17 @@ void RISCV::mem()
 
                     D.allocate(MemAdr);
                 }
-                D.write(reg[rs2]);
+
+                uint32_t present_data = D.read();
+                present_data = (present_data & 0xFFFFFF00);
+                present_data += (reg[rs2] & 0x000000FF);
+                D.offset_num = 0;
+                D.write(present_data);
+
             } else {
                 memory[MemAdr]=reg[rs2];
                 std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
+                std::cout<<"stored value: "<<memory[MemAdr]<<endl;
                 break;
             }
             
@@ -838,60 +866,40 @@ void RISCV::mem()
 
                     D.allocate(MemAdr);
                 }
-                D.write(reg[rs2]);
-                D.offset_num += 8;
-                D.write(reg[rs2]>>8);
+                
+                uint32_t present_data = D.read();
+                present_data = (present_data & 0xFFFF0000);
+                present_data += (reg[rs2] & 0x0000FFFF);
+                D.offset_num = 0;
+                D.write(present_data);
+
             } else {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
                 std::cout<<"MEMORY: Store 2 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
+                std::cout<<"stored value: "<<memory[MemAdr]<<endl;
                 break;
             }
             
             case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
             if (cache) {
-                bool hit = D.isPresent(MemAdr);
-                if (hit) {
-                    D.hits++;
-                    D.recencyUpdater(D.index, D.thisWay);
-                } else {
-                    int miss = D.miss_type(MemAdr);
-                    switch (miss){
-                    case 1:
-                        D.cold_miss++;
-                        break;
-                    case 2:
-                        D.conflict_miss++;
-                        break;
-                    case 3:
-                        D.capacity_miss++;
-                        break;
-                    }
-
-                    printf("----------------------------------------------------------\n");
-                    printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
-                    printf("----------------------------------------------------------\n");
-
-                    clock_cycle += D.penalty;
-                    D.memory_stalls += D.penalty;
-
-                    D.allocate(MemAdr);
-                }
+                
+                D.offset_num = 0;
                 D.write(reg[rs2]);
-                D.offset_num += 8;
-                D.write(reg[rs2]>>8);
-                D.offset_num += 8;
-                D.write(reg[rs2]>>16);
-                D.offset_num += 8;
-                D.write(reg[rs2]>>24);
+                std::cout<<"writing to mem OVER\n";
+            
             } else {
+            
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
                 memory[MemAdr+2]=(reg[rs2]>>16);
                 memory[MemAdr+3]=(reg[rs2]>>24);
-                std::cout<<"MEMORY: Store 4 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
-                break;
+                std::cout<<"stored value: "<<memory[MemAdr]<<endl;
+                std::cout<<"writing to mem OVER\n";
             }
+            std::cout<<"MEMORY: Store 4 Bytes of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
+            break;
+
             
             default: break;   
         }

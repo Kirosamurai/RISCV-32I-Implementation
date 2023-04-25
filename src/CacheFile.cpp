@@ -18,13 +18,13 @@ bool Cache::isPresent(uint32_t add) {
     for (int i=index_bits-1; i>=0; i--) {
         index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
-    
+
     for (int i=0; i<associativity; i++) {
-        if (tag_array[index_num][i].compare(tag) != 0) {
-            if (data_array[index_num][0][i] == "1") {
-              thisWay = i;
-              return true;
-            }
+        if (tag_array[index_num][i] == tag) {
+          if (data_array[index_num][0][i] == "1") {
+            thisWay = i;
+            return true;
+          }
         }
     }
     return false;
@@ -33,36 +33,23 @@ bool Cache::isPresent(uint32_t add) {
 
 // mem_address here has to be the starting address of the block.
 void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, int way) {
-  std::cout<<"mml started\n";
   if (whichCache == 1) // I$
   { 
     std::string data_upload;
     for (int i = 0; i < (block_size); i += 4) {
-      if ((processor.instruction_memory.find(mem_address + i)) ==
-          (processor.instruction_memory.end())) {
-        processor.instruction_memory[mem_address + i] = 0;
-      }
       uint32_t value_at_memory = processor.instruction_memory[mem_address + i];
       data_upload += std::bitset<32>(value_at_memory).to_string();
     }
     data_array[index][3][way] = data_upload;
-    std::cout<<data_array[index][3][way] << endl;
-    std::cout<<"mml completed\n";
     return;
   } else // D$
   {
     std::string data_upload;
     for (int i = 0; i < (block_size); i++) {
-      if ((processor.memory.find(mem_address + i)) ==
-          (processor.memory.end())) {
-        processor.memory[mem_address + i] = 0;
-      }
       uint8_t value_at_memory = processor.memory[mem_address + i];
       data_upload += std::bitset<8>(value_at_memory).to_string();
     }
     data_array[index][3][way] = data_upload;
-    std::cout<<data_array[index][3][way] << endl;
-    std::cout<<"mml completed\n";
     return;
   }
 }
@@ -97,7 +84,6 @@ int Cache::recencyTranslateVal(int index, int way) {
 }
 
 void Cache::recencyUpdater(std::string index_str, int way) {
-  std::cout<<"recencyUpdater started\n";
   int index = 0;
   for (int i=index_bits-1; i>=0; i--) {
     index += (index_str[i]-'0') * pow(2,index_bits-i-1);
@@ -148,7 +134,6 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     break;
   }
   }
-  std::cout<<"recencyUpdater ended\n";
 }
 
 void Cache::dirtyVictim(int index_num, int way) {
@@ -400,10 +385,11 @@ void Cache::allocate(uint32_t mem_address) {
 }
 
 //IF HIT:
-uint8_t Cache::read() {
+uint32_t Cache::read() {
   std::cout<<"read start\n";	
     
-    uint8_t data_val = 0;
+    uint32_t data_val = 0;
+    offset_num = 0;
 
     int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
@@ -416,8 +402,8 @@ uint8_t Cache::read() {
 
     std::string data = data_array[index_num][3][thisWay];
 
-    for (int i=8*offset_num; i<8*(offset_num+1); i++) {
-        data_val += (data[i]-'0') * pow(2,8*offset_bits+7-i);
+    for (int i=8*offset_num; i<8*(offset_num+4); i++) {
+        data_val += (data[i]-'0') * pow(2,8*offset_num+31-i);
     }
 
     return data_val;
@@ -426,49 +412,48 @@ uint8_t Cache::read() {
 }
 
 uint32_t Cache::readI() {
-    std::cout<<"readI start\n";	
     uint32_t data_val = 0;
+    offset_num=0;
 
     int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
         index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
 
-    // std::
     for (int i=offset_bits-1; i>=0; i--) {
         offset_num += (offset[i]-'0') * pow(2,offset_bits-i-1);
     }
 
     std::string data = data_array[index_num][3][thisWay];
-
-    for (int i=8*offset_num; i<8*(offset_num+4); i++) {
-        data_val += (data[i]-'0') * pow(2,8*offset_bits+31-i);
-    }
-    std::cout<<"readI end\n";	
-    return data_val;
     
+    for (int i=8*offset_num; i<8*(offset_num+4); i++) {
+        data_val += (data[i]-'0') * pow(2,8*offset_num+31-i);
+    }
+    return data_val;
 
 }
 
-void Cache::write(uint8_t data_val) {
+void Cache::write(uint32_t data_val) {
     std::cout<<"write start\n";	
     int index_num=0;
     for (int i=index_bits-1; i>=0; i--) {
         index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
 
+    offset_num = 0;
     for (int i=offset_bits-1; i>=0; i--) {
-        offset_num += offset[i] * pow(2,offset_bits-i-1);
+        offset_num += (offset[i]-'0') * pow(2,offset_bits-i-1);
     }
 
     data_array[index_num][0][thisWay] = 1; //validity
     data_array[index_num][1][thisWay] = 1; //dirty
     
-    std::string data_val_bits = std::bitset<8>(data_val).to_string();
+    std::string data_val_bits = std::bitset<32>(data_val).to_string();
     std::string data = data_array[index_num][3][thisWay];
 
-    for (int i=8*offset_num; i<8*(offset_num+1); i++) {
-        data_array[index_num][3][thisWay][i] = data_val_bits[i-8*offset_bits];
+    std::cout<<data_val_bits<<endl<<data<<endl;
+    for (int i=8*offset_num; i<8*(offset_num+4); i++) {
+        data[i] = data_val_bits[i-8*offset_bits];
     }
     std::cout<<"write end\n";	
 }
@@ -497,3 +482,27 @@ int Cache::miss_type(uint32_t mem_address){
   	
 }
 
+void ByteWriter(int add) {
+  bool hit = D.isPresent(add);
+  if (hit) {
+      D.hits++;
+      D.recencyUpdater(D.index, D.thisWay);
+  } else {
+      int miss = D.miss_type(add);
+      switch (miss){
+      case 1:
+          D.cold_miss++;
+          break;
+      case 2:
+          D.conflict_miss++;
+          break;
+      case 3:
+          D.capacity_miss++;
+          break;
+      }
+      processor.clock_cycle += D.penalty;
+      D.memory_stalls += D.penalty;
+
+      D.allocate(add);
+  }
+}
