@@ -2,6 +2,8 @@
 #include <bitset>
 #include <string>
 #include <cstring>
+#include <vector>
+#include <algorithm>
 #include "CacheFile.h"
 
 bool Cache::isPresent(uint32_t add) {
