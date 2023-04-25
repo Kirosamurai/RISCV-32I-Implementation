@@ -123,8 +123,8 @@ public:
 
     //IF HIT: update recency, then read or write
     void recencyUpdater(std::string index, int way);
-    void write(uint32_t data);
-    uint32_t read();
+    void write(uint8_t data);
+    uint8_t read();
     uint32_t readI();
     
     // function that makes offset bits to 0 from an address
@@ -145,6 +145,7 @@ public:
 };
 
 void ByteWriter(int memadd);
+void ByteReader(int memadd);
 
 extern Cache I;
 extern Cache D;

@@ -178,7 +178,7 @@ void RISCV::fetch()
                 I.allocate(pc);
             }
             I.offset_num = 0;
-            bits = I.read();
+            bits = I.readI();
         }
         
 
@@ -619,36 +619,9 @@ void RISCV::mem()
             case 1:    
             
             if (cache) {
-                bool hit = D.isPresent(MemAdr);
-                if (hit) {
-                    D.hits++;
-                    D.recencyUpdater(D.index, D.thisWay);
-                } else {
-                    int miss = D.miss_type(MemAdr);
-                    switch (miss){
-                    case 1:
-                        D.cold_miss++;
-                        break;
-                    case 2:
-                        D.conflict_miss++;
-                        break;
-                    case 3:
-                        D.capacity_miss++;
-                        break;
-                    }
-
-                    printf("----------------------------------------------------------\n");
-                    printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
-                    printf("----------------------------------------------------------\n");
-
-                    clock_cycle += D.penalty;
-                    D.memory_stalls += D.penalty;
-
-                    D.offset_num = 0;
-                    D.allocate(MemAdr);
-                }
-                LoadData = D.read();
-                if ((LoadData&(1<<7))!=0) {LoadData+=0xFFFFFF00;}
+                LoadData = 0;
+                ByteReader(MemAdr);
+                LoadData += (D.read());
             } else {
                 if (memory.find(MemAdr)==memory.end()) {
                     LoadData=0;
@@ -666,40 +639,11 @@ void RISCV::mem()
             case 2:
             
             if (cache) {
-                bool hit = D.isPresent(MemAdr);
-                if (hit) {
-                    D.hits++;
-                    D.recencyUpdater(D.index, D.thisWay);
-                } else {
-                    int miss = D.miss_type(MemAdr);
-                    switch (miss){
-                    case 1:
-                        D.cold_miss++;
-                        break;
-                    case 2:
-                        D.conflict_miss++;
-                        break;
-                    case 3:
-                        D.capacity_miss++;
-                        break;
-                    }
-
-                    printf("----------------------------------------------------------\n");
-                    printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
-                    printf("----------------------------------------------------------\n");
-
-                    clock_cycle += D.penalty;
-                    D.memory_stalls += D.penalty;
-
-                    D.allocate(MemAdr);
+                LoadData = 0;
+                for (int i=0 ; i<2 ; i++) {
+                    ByteReader(MemAdr+i);
+                    LoadData += (D.read()<<8*i);
                 }
-                //Adding Half Word to LoadData
-                D.offset_num = 0;
-                LoadData = D.read();
-                LoadData = LoadData << 8;
-                D.offset_num += 8;
-                LoadData += D.read();
-                if ((LoadData&(1<<15))!=0) {LoadData+=0xFFFF0000;}
             } else {
                 if (memory.find(MemAdr)==memory.end()) {
                     LoadData+=0;
@@ -722,46 +666,12 @@ void RISCV::mem()
             case 3:   
             
             if (cache) {
-                bool hit = D.isPresent(MemAdr);
-                if (hit) {
-                    D.hits++;
-                    D.recencyUpdater(D.index, D.thisWay);
-                } else {
-                    int miss = D.miss_type(MemAdr);
-                    switch (miss){
-                    case 1:
-                        D.cold_miss++;
-                        break;
-                    case 2:
-                        D.conflict_miss++;
-                        break;
-                    case 3:
-                        D.capacity_miss++;
-                        break;
-                    }
-
-                    printf("----------------------------------------------------------\n");
-                    printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
-                    printf("----------------------------------------------------------\n");
-
-                    clock_cycle += D.penalty;
-                    D.memory_stalls += D.penalty;
-
-                    D.allocate(MemAdr);
+                LoadData = 0;
+                for (int i=0 ; i<4 ; i++) {
+                    ByteReader(MemAdr+i);
+                    LoadData += (D.read()<<8*i);
                 }
-                //Adding word to LoadData
-                D.offset_num = 0;
-                LoadData = D.read();
-                LoadData = LoadData << 8;
-                D.offset_num += 8;
-                LoadData += D.read();
-                LoadData = LoadData << 8;
-                D.offset_num += 8;
-                LoadData += D.read();
-                LoadData = LoadData << 8;
-                D.offset_num += 8;
-                LoadData += D.read();
-
+                
             } else {
                 int loop;
                 for (loop=0; loop<4; loop++) {   
@@ -796,40 +706,15 @@ void RISCV::mem()
             
             case 1: //M[rs1+imm][0:7] = rs2[0:7] SB
             if (cache) {
-                bool hit = D.isPresent(MemAdr);
-                if (hit) {
-                    D.hits++;
-                    D.recencyUpdater(D.index, D.thisWay);
-                } else {
-                    int miss = D.miss_type(MemAdr);
-                    switch (miss){
-                    case 1:
-                        D.cold_miss++;
-                        break;
-                    case 2:
-                        D.conflict_miss++;
-                        break;
-                    case 3:
-                        D.capacity_miss++;
-                        break;
-                    }
-
-                    printf("----------------------------------------------------------\n");
-                    printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
-                    printf("----------------------------------------------------------\n");
-
-                    clock_cycle += D.penalty;
-                    D.memory_stalls += D.penalty;
-
-                    D.allocate(MemAdr);
+                ByteWriter(MemAdr);
+                D.write(reg[rs2]);
+                memory[MemAdr] = (reg[rs2]);
+                int index_num=0;
+                for (int i=D.index_bits-1; i>=0; i--) {
+                    index_num += (D.index[i]-'0') * pow(2,D.index_bits-i-1);
                 }
-
-                uint32_t present_data = D.read();
-                present_data = (present_data & 0xFFFFFF00);
-                present_data += (reg[rs2] & 0x000000FF);
-                D.offset_num = 0;
-                D.write(present_data);
-
+                std::cout<<"data stored: "<<D.data_array[index_num][3][D.thisWay]<<endl;
+                std::cout<<"writing to mem OVER\n";
             } else {
                 memory[MemAdr]=reg[rs2];
                 std::cout<<"MEMORY: Store 1 Byte of Memory Value "<<reg[rs2]<<" to address "<<MemAdr<<'\n';
@@ -839,40 +724,17 @@ void RISCV::mem()
             
             case 2: //M[rs1+imm][0:15] = rs2[0:15] SH
             if (cache) {
-                bool hit = D.isPresent(MemAdr);
-                if (hit) {
-                    D.hits++;
-                    D.recencyUpdater(D.index, D.thisWay);
-                } else {
-                    int miss = D.miss_type(MemAdr);
-                    switch (miss){
-                    case 1:
-                        D.cold_miss++;
-                        break;
-                    case 2:
-                        D.conflict_miss++;
-                        break;
-                    case 3:
-                        D.capacity_miss++;
-                        break;
-                    }
-
-                    printf("----------------------------------------------------------\n");
-                    printf("--------------MISS PENALTY, PROCESSOR STALLED-------------\n");
-                    printf("----------------------------------------------------------\n");
-
-                    clock_cycle += D.penalty;
-                    D.memory_stalls += D.penalty;
-
-                    D.allocate(MemAdr);
+                for (int i=0 ; i<2 ; i++) {
+                    ByteWriter(MemAdr+i);
+                    D.write(reg[rs2]>>(8*i));
+                    memory[MemAdr+i] = (reg[rs2]>> 8*i);
                 }
-                
-                uint32_t present_data = D.read();
-                present_data = (present_data & 0xFFFF0000);
-                present_data += (reg[rs2] & 0x0000FFFF);
-                D.offset_num = 0;
-                D.write(present_data);
-
+                int index_num=0;
+                for (int i=D.index_bits-1; i>=0; i--) {
+                    index_num += (D.index[i]-'0') * pow(2,D.index_bits-i-1);
+                }
+                std::cout<<"data stored: "<<D.data_array[index_num][3][D.thisWay]<<endl;
+                std::cout<<"writing to mem OVER\n";
             } else {
                 memory[MemAdr]=reg[rs2];
                 memory[MemAdr+1]=(reg[rs2]>>8);
@@ -884,8 +746,16 @@ void RISCV::mem()
             case 3: //M[rs1+imm][0:31] = rs2[0:31] SW
             if (cache) {
                 
-                D.offset_num = 0;
-                D.write(reg[rs2]);
+                for (int i=0 ; i<4 ; i++) {
+                    ByteWriter(MemAdr+i);
+                    D.write(reg[rs2]>>(8*i));
+                    memory[MemAdr+i] = (reg[rs2]>> 8*i);
+                }
+                int index_num=0;
+                for (int i=D.index_bits-1; i>=0; i--) {
+                    index_num += (D.index[i]-'0') * pow(2,D.index_bits-i-1);
+                }
+                std::cout<<"data stored: "<<D.data_array[index_num][3][D.thisWay]<<endl;
                 std::cout<<"writing to mem OVER\n";
             
             } else {
