@@ -10,6 +10,18 @@
 #include "CacheFile.h"
 #include "Core.h"
 
+void RISCV::instructionMainMemoryUpload() {
+    char currentpc[11];
+    char currentinstruction[11];
+    uint32_t currentpc_number;
+    uint32_t bits;
+    while (fscanf(programcode, "%s %s", currentpc, currentinstruction) != EOF) {
+        currentpc_number = stringtohex(currentpc);
+        bits = stringtohex(currentinstruction);
+        instruction_memory[currentpc_number] = bits;
+    }
+}
+
 void RISCV::createCache() {
     //I$:
     if (proc_i_mapping == 2) {I.init(proc_i_sizeCache, proc_i_sizeCache, proc_i_ways);}

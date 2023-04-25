@@ -65,7 +65,6 @@ public:
     std::map<uint32_t, uint8_t> memory;
     std::map<uint32_t, uint32_t> instruction_memory;
 
-
     //constructor function
     RISCV()
     {
@@ -141,6 +140,7 @@ public:
     void mem();
     void write_back();
 
+    void instructionMainMemoryUpload();
     void reset();
     void store_memory(); 
     void instruction_exit();

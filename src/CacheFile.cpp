@@ -44,6 +44,8 @@ void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, in
       uint32_t value_at_memory = processor.instruction_memory[mem_address + i];
       data_array[index][3][way] += std::bitset<32>(value_at_memory).to_string();
     }
+    std::cout<<data_array[index][3][way] << endl;
+    std::cout<<"mml completed\n";
     return;
   } else // D$
   {
@@ -55,9 +57,10 @@ void Cache::mainMemoryLoader(int whichCache, uint32_t mem_address, int index, in
       uint8_t value_at_memory = processor.memory[mem_address + i];
       data_array[index][3][way] += std::bitset<8>(value_at_memory).to_string();
     }
+    std::cout<<data_array[index][3][way] << endl;
+    std::cout<<"mml completed\n";
     return;
   }
-  std::cout<<"mml completed\n";
 }
 
 void Cache::recencyAssignVal(int index, int way, int value) {
@@ -427,6 +430,7 @@ uint32_t Cache::readI() {
         index_num += (index[i]-'0') * pow(2,index_bits-i-1);
     }
 
+    // std::
     for (int i=offset_bits-1; i>=0; i--) {
         offset_num += (offset[i]-'0') * pow(2,offset_bits-i-1);
     }
