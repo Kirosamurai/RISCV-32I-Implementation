@@ -3,7 +3,6 @@
 #include <string>
 #include <cstring>
 #include "CacheFile.h"
-//#include <bits/stdc++.h>
 
 bool Cache::isPresent(uint32_t add) {
     
@@ -154,13 +153,11 @@ void Cache::dirtyVictim(int index_num, int way) {
   }
 }
 
-
 uint32_t Cache::noOffset(uint32_t address) {
   uint32_t no_offset_address = address >> offset_bits;
   no_offset_address = no_offset_address << offset_bits;
   return no_offset_address;
 }
-
 
 // IF MISS:
 void Cache::allocate(uint32_t mem_address) {	
@@ -402,9 +399,6 @@ uint32_t Cache::readI() {
     }
 
     std::string data = data_array[index_num][3][thisWay];
-
-    //8x -- 8x+8
-    //8x -- 8x+32
 
     for (int i=8*offset_num; i<8*(offset_num+4); i++) {
         data_val += data[i] * pow(2,8*offset_bits+31-i);

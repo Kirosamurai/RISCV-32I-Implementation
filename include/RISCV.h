@@ -131,6 +131,8 @@ public:
     void instruction_exit();
 };
 
+class Cache;
+
 uint32_t stringtohex(char input[11]);
 
 extern RISCV processor;

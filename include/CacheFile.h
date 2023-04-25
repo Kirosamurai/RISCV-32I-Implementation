@@ -129,6 +129,8 @@ public:
 extern Cache I$;
 extern Cache D$;
 
+class RISCV;
+
 extern RISCV processor;
 
 #endif

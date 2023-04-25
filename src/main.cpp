@@ -137,6 +137,8 @@ int main(int argc, char* argv[]) {
       scanf("%d", CPU.i_replacement);
       I$.replace = CPU.i_replacement;
     }
+    printf("Instruction Cache Miss Penalty: ");
+    scanf("%d", I$.penalty);
 
     printf("\n\nEnter Data cache specifications:\n");
     printf("Data Cache Size (in bytes): ");
@@ -163,9 +165,6 @@ int main(int argc, char* argv[]) {
       scanf("%d", CPU.d_replacement);
       D$.replace = CPU.d_replacement;
     }
-
-    printf("Instruction Cache Miss Penalty: ");
-    scanf("%d", I$.penalty);
     printf("Data Cache Miss Penalty: ");
     scanf("%d", D$.penalty);
 

@@ -36,6 +36,7 @@ void Core::loadMemory() {
     processor.pipeline = pipelining;
     processor.forward = forwarding;
 
+    //Enabling/disabling cache:
     processor.cache = caching;
     
 

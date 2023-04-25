@@ -1,5 +1,5 @@
 all:
-	g++ main.cpp Core.cpp Cache.cpp Pipeline.cpp RISCV.cpp GUI.cpp -w -I ../include -o ../bin/RISCV
+	g++ main.cpp Core.cpp CacheFile.cpp Pipeline.cpp RISCV.cpp GUI.cpp -w -I ../include -o ../bin/RISCV
 
 clean:
 	rm -f *.o *~ *.bak ../bin/RISCV
