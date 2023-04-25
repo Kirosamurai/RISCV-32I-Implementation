@@ -116,11 +116,14 @@ void Cache::recencyUpdater(std::string index_str, int way) {
     int queue_counter = 0;
     
     for (int i=0; i<associativity; i++) {
-      if (data_array[index][0][i] == "1") {
+      if ((data_array[index][0][i]) == "1") {
         queue_counter++;
       }
     }
-    
+    if ((data_array[index][0][way])=="1")
+    {
+      queue_counter--;
+    }
     std::cout<< "wue count: "<<queue_counter<< endl;
     recencyAssignVal(index, way, queue_counter);
     break;
@@ -265,22 +268,24 @@ void Cache::allocate(uint32_t mem_address) {
       }	
       case 2: // if FIFO, pick any "00000" and kick	
       {	
+        for (int i = 0; i < associativity; i++)
+        {
+          cout<<"data recency array"<<data_array[index_num][2][i];
+        }
         for (int i = 0; i < associativity; i++) {	
           if ((data_array[index_num][2][i]) == min_val_string) {	
             thisWay = i;	
             dirtyVictim(index_num, thisWay);	
-            break;	
+            goto updateRest1;
           }	
         }
-        if (data_array[index_num][2][thisWay] != max_val_string) {
-          for (int i = 0; i < associativity; i++) {
-            // data_array[index][2][i]--;
-            if (data_array[index_num][2][i] != min_val_string) {
-              recencyAssignVal(index_num, i, (recencyTranslateVal(index_num, i) - 1));
-            }
+        updateRest1:
+        for (int i = 0; i < associativity; i++) {
+          // data_array[index][2][i]--;
+          if (data_array[index_num][2][i] != min_val_string) {
+            recencyAssignVal(index_num, i, (recencyTranslateVal(index_num, i) - 1));
           }
-          data_array[index_num][2][thisWay] = max_val_string;
-        }	
+        }
         break;	
       }	
       case 3: // if RANDOM, pick any and kick	
@@ -361,12 +366,20 @@ void Cache::allocate(uint32_t mem_address) {
       case 2: // if FIFO, pick any "00000" and kick	
       {	
         for (int i = 0; i < associativity; i++) {	
+          cout<<"data recency array"<<data_array[index_num][2][i];
           if ((data_array[index_num][2][i]) == min_val_string) {	
             thisWay = i;	
             dirtyVictim(index_num, thisWay);	
-            break;	
+            goto updateRest2;
           }	
-        }	
+        }
+        updateRest2:
+        for (int i = 0; i < associativity; i++) {
+          // data_array[index][2][i]--;
+          if (data_array[index_num][2][i] != min_val_string) {
+            recencyAssignVal(index_num, i, (recencyTranslateVal(index_num, i) - 1));
+          }
+        }
         break;	
       }	
       case 3: // if RANDOM, pick any and kick	
